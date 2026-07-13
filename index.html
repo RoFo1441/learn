@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Zuba — Free Networking Foundations</title>
+<style>
+html{scroll-behavior:smooth}
+/* Zuba_Addressing_Chain_Ride_v7.html */
+
+  :root{
+    --bg:#F6F7F9; --surface:#FFFFFF; --ink:#1B2230; --muted:#5B6573;
+    --line:#E2E6EC; --accent:#1E4FA3; --accent-soft:#EAF0FB;
+    --wa:#25D366; --wa-ink:#0B3D24; --warn:#B45309; --warn-soft:#FDF3E6;
+    --ok:#0F7A4D;
+    --font-read:"Newsreader",Georgia,"Times New Roman",serif;
+    --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);line-height:1.5;padding:0 0 120px}
+  .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  header{background:var(--ink);color:#fff;padding:22px 0 20px;margin-bottom:8px}
+  .docket{font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;color:#A9B6CC;display:flex;justify-content:space-between;border-bottom:1px dashed #3A4456;padding-bottom:8px;margin-bottom:14px}
+  h1{font-family:var(--font-read);font-weight:600;font-size:26px;line-height:1.15;margin:0 0 6px}
+  header p{margin:0;color:#C7D0DE;font-size:15px}
+  .notice{background:var(--warn-soft);border:1px solid #F0D9B6;color:#7A4A09;border-radius:12px;padding:12px 14px;margin:16px 0;font-size:14.5px}
+  .notice b{color:var(--warn)}
+  .idrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+  .idrow .field{flex:1 1 200px}
+  label.lab{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:0 0 5px}
+  input[type=text],textarea{width:100%;font-family:var(--font-ui);font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;-webkit-appearance:none}
+  input[type=text]:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  textarea{resize:vertical;min-height:84px;line-height:1.45}
+  .how{font-size:15px;color:var(--muted);margin:14px 0 0}
+  .how b{color:var(--ink)}
+  .node{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--accent);text-transform:uppercase;margin:0 0 6px}
+  .node h2{font-family:var(--font-ui);font-weight:700;font-size:20px;margin:0 0 14px;letter-spacing:-.01em}
+  .read{font-family:var(--font-read);font-size:18.5px;line-height:1.62;color:#222a38}
+  .read p{margin:0 0 15px}
+  .read strong{font-weight:600}
+  .read em{font-style:italic}
+  .addr{font-family:var(--font-mono);font-size:19px;letter-spacing:.02em;background:var(--accent-soft);color:#163e85;border-radius:8px;padding:10px 12px;text-align:center;margin:4px 0 16px;font-weight:600}
+  .diagram{max-width:340px;margin:6px auto 18px}
+  .diagram svg{width:100%;height:auto;display:block}
+  .diagram .cap{font-family:var(--font-ui);font-size:12.5px;color:var(--muted);text-align:center;margin:6px 0 0}
+  details.deep{margin:2px 0 8px;background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:0 14px}
+  details.deep summary{font-family:var(--font-ui);font-size:14px;color:var(--accent);cursor:pointer;padding:11px 0;font-weight:600;list-style:none}
+  details.deep summary::-webkit-details-marker{display:none}
+  details.deep summary::before{content:"▸ ";font-size:12px}
+  details.deep[open] summary::before{content:"▾ "}
+  details.deep .dbody{font-family:var(--font-read);font-size:16.5px;line-height:1.55;color:#3a4250;padding:0 0 14px}
+  .tear{border:0;border-top:1px dashed var(--line);margin:18px -18px 16px}
+  .qlabel{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin:0 0 9px}
+  .flags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+  .flag{font-family:var(--font-ui);font-size:14.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 13px;cursor:pointer;user-select:none;transition:background .12s,border-color .12s,color .12s}
+  .flag:hover{border-color:#C3CCDA}
+  .flag[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .flag:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .check{background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:6px}
+  .check .q{font-family:var(--font-read);font-size:17px;line-height:1.5;color:#2a3342;margin:0 0 10px}
+  .check .q b{font-weight:600}
+  details.notes{margin-top:14px}
+  details.notes summary{font-size:13px;color:var(--muted);cursor:pointer;font-family:var(--font-mono);letter-spacing:.02em}
+  details.notes .body{font-size:14px;color:var(--muted);background:#FBFCFD;border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:8px;line-height:1.5}
+  details.notes .body b{color:var(--ink)}
+  .overall{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
+  .overall h2{font-family:var(--font-ui);font-size:19px;margin:0 0 4px}
+  .overall .sub{color:var(--muted);font-size:14.5px;margin:0 0 16px}
+  .qblock{margin:0 0 16px}
+  .actions{position:sticky;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(246,247,249,0) 0%,var(--bg) 26%);padding:16px 0 18px;margin-top:8px}
+  .btn{display:block;width:100%;font-family:var(--font-ui);font-size:17px;font-weight:600;border:0;border-radius:12px;padding:15px;cursor:pointer;text-align:center;text-decoration:none}
+  .btn-build{background:var(--ink);color:#fff;margin-bottom:10px}
+  .btn-build:active{transform:translateY(1px)}
+  .out{display:none}
+  .out.show{display:block}
+  .logbox{font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:160px;background:#fff;margin:0 0 10px}
+  .send-row{display:flex;gap:10px}
+  .btn-wa{background:var(--wa);color:#053B22;flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:9px}
+  .btn-copy{background:#fff;color:var(--ink);border:1px solid var(--line);flex:0 0 auto;width:104px}
+  .btn-wa svg{width:20px;height:20px;flex:none}
+  .copied{color:var(--ok);font-size:13px;text-align:center;margin:8px 0 0;height:16px;font-weight:600}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 0}
+  @media (max-width:420px){.read{font-size:17.5px}h1{font-size:23px}.node{padding:18px 15px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Zuba_F2_Ride_Part1.html */
+
+  :root{
+    --bg:#F6F7F9; --surface:#FFFFFF; --ink:#1B2230; --muted:#5B6573;
+    --line:#E2E6EC; --accent:#1E4FA3; --accent-soft:#EAF0FB;
+    --wa:#25D366; --ok:#0F7A4D; --warn:#B45309; --warn-soft:#FDF3E6;
+    --font-read:"Newsreader",Georgia,"Times New Roman",serif;
+    --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);line-height:1.5;padding:0 0 120px}
+  .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  header{background:var(--ink);color:#fff;padding:22px 0 20px;margin-bottom:8px}
+  .docket{font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;color:#A9B6CC;display:flex;justify-content:space-between;border-bottom:1px dashed #3A4456;padding-bottom:8px;margin-bottom:14px}
+  h1{font-family:var(--font-read);font-weight:600;font-size:25px;line-height:1.15;margin:0 0 6px}
+  header p{margin:0;color:#C7D0DE;font-size:15px}
+  .notice{background:var(--warn-soft);border:1px solid #F0D9B6;color:#7A4A09;border-radius:12px;padding:12px 14px;margin:16px 0;font-size:14.5px}
+  .notice b{color:var(--warn)}
+  .idrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+  .idrow .field{flex:1 1 200px}
+  label.lab{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:0 0 5px}
+  input[type=text],textarea{width:100%;font-family:var(--font-ui);font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;-webkit-appearance:none}
+  input[type=text]:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  textarea{resize:vertical;min-height:80px;line-height:1.45}
+  .how{font-size:15px;color:var(--muted);margin:14px 0 0}
+  .how b{color:var(--ink)}
+  .node{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--accent);text-transform:uppercase;margin:0 0 6px}
+  .node h2{font-family:var(--font-ui);font-weight:700;font-size:20px;margin:0 0 14px;letter-spacing:-.01em}
+  .read{font-family:var(--font-read);font-size:18.5px;line-height:1.62;color:#222a38}
+  .read p{margin:0 0 15px}
+  .read strong{font-weight:600}.read em{font-style:italic}
+  .read code{font-family:var(--font-mono);font-size:.86em;background:#F1F3F6;padding:1px 5px;border-radius:5px}
+  .arrow{margin:0 0 12px;padding-left:4px}
+  .addr{font-family:var(--font-mono);font-size:18px;letter-spacing:.02em;background:var(--accent-soft);color:#163e85;border-radius:8px;padding:10px 12px;text-align:center;margin:4px 0 16px;font-weight:600}
+  .diagram{max-width:560px;margin:8px auto 16px}
+  .diagram svg{width:100%;height:auto;display:block}
+  .tryit{background:#F0F7F2;border:1px solid #BfDfC9;border-left:4px solid var(--ok);border-radius:10px;padding:13px 15px;margin:4px 0 16px;font-family:var(--font-read);font-size:16.5px;line-height:1.5;color:#21402f}
+  .tryit b{font-weight:600}.tryit em{font-style:italic}.tryit code{font-family:var(--font-mono);font-size:.85em;background:#E1EFE7;padding:1px 5px;border-radius:5px}
+  .tear{border:0;border-top:1px dashed var(--line);margin:18px -18px 16px}
+  .qlabel{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin:0 0 9px}
+  .flags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+  .flag{font-family:var(--font-ui);font-size:14.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 13px;cursor:pointer;user-select:none;transition:background .12s,border-color .12s,color .12s}
+  .flag:hover{border-color:#C3CCDA}
+  .flag[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .check{background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:6px}
+  .check .q{font-family:var(--font-read);font-size:17px;line-height:1.5;color:#2a3342;margin:0 0 10px}
+  .check .q b{font-weight:600}
+  details.notes{margin-top:14px}
+  details.notes summary{font-size:13px;color:var(--muted);cursor:pointer;font-family:var(--font-mono);letter-spacing:.02em}
+  details.notes .body{font-size:14px;color:var(--muted);background:#FBFCFD;border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:8px;line-height:1.5}
+  details.notes .body b{color:var(--ink)}
+  .overall{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
+  .overall h2{font-family:var(--font-ui);font-size:19px;margin:0 0 4px}
+  .overall .sub{color:var(--muted);font-size:14.5px;margin:0 0 16px}
+  .qblock{margin:0 0 16px}
+  .actions{position:sticky;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(246,247,249,0) 0%,var(--bg) 26%);padding:16px 0 18px;margin-top:8px}
+  .btn{display:block;width:100%;font-family:var(--font-ui);font-size:17px;font-weight:600;border:0;border-radius:12px;padding:15px;cursor:pointer;text-align:center;text-decoration:none}
+  .btn-build{background:var(--ink);color:#fff;margin-bottom:10px}
+  .out{display:none}.out.show{display:block}
+  .logbox{font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:150px;background:#fff;margin:0 0 10px}
+  .send-row{display:flex;gap:10px}
+  .btn-wa{background:var(--wa);color:#053B22;flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:9px}
+  .btn-copy{background:#fff;color:var(--ink);border:1px solid var(--line);flex:0 0 auto;width:104px}
+  .btn-wa svg{width:20px;height:20px;flex:none}
+  .copied{color:var(--ok);font-size:13px;text-align:center;margin:8px 0 0;height:16px;font-weight:600}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 0}
+  @media (max-width:420px){.read{font-size:17.5px}h1{font-size:22px}.node{padding:18px 15px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Zuba_F2_Ride_Part2.html */
+
+  :root{
+    --bg:#F6F7F9; --surface:#FFFFFF; --ink:#1B2230; --muted:#5B6573;
+    --line:#E2E6EC; --accent:#1E4FA3; --accent-soft:#EAF0FB;
+    --wa:#25D366; --ok:#0F7A4D; --warn:#B45309; --warn-soft:#FDF3E6;
+    --pay:#7A3FA3; --pay-soft:#F3ECF9;
+    --font-read:"Newsreader",Georgia,"Times New Roman",serif;
+    --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-ui);line-height:1.5;padding:0 0 120px}
+  .wrap{max-width:680px;margin:0 auto;padding:0 18px}
+  header{background:var(--ink);color:#fff;padding:22px 0 20px;margin-bottom:8px}
+  .docket{font-family:var(--font-mono);font-size:12px;letter-spacing:.04em;color:#A9B6CC;display:flex;justify-content:space-between;border-bottom:1px dashed #3A4456;padding-bottom:8px;margin-bottom:14px}
+  h1{font-family:var(--font-read);font-weight:600;font-size:25px;line-height:1.15;margin:0 0 6px}
+  header p{margin:0;color:#C7D0DE;font-size:15px}
+  .notice{background:var(--warn-soft);border:1px solid #F0D9B6;color:#7A4A09;border-radius:12px;padding:12px 14px;margin:16px 0;font-size:14.5px}
+  .notice b{color:var(--warn)}
+  .idrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
+  .idrow .field{flex:1 1 200px}
+  label.lab{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:0 0 5px}
+  input[type=text],textarea{width:100%;font-family:var(--font-ui);font-size:16px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;-webkit-appearance:none}
+  input[type=text]:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  textarea{resize:vertical;min-height:80px;line-height:1.45}
+  .how{font-size:15px;color:var(--muted);margin:14px 0 0}
+  .how b{color:var(--ink)}
+  .node{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--accent);text-transform:uppercase;margin:0 0 6px}
+  .node h2{font-family:var(--font-ui);font-weight:700;font-size:20px;margin:0 0 14px;letter-spacing:-.01em}
+  .read{font-family:var(--font-read);font-size:18.5px;line-height:1.62;color:#222a38}
+  .read p{margin:0 0 15px}
+  .read strong{font-weight:600}.read em{font-style:italic}
+  .read code{font-family:var(--font-mono);font-size:.86em;background:#F1F3F6;padding:1px 5px;border-radius:5px}
+  .arrow{margin:0 0 12px;padding-left:4px}
+  .diagram{max-width:560px;margin:8px auto 16px}
+  .diagram svg{width:100%;height:auto;display:block}
+  .tryit{background:#F0F7F2;border:1px solid #BfDfC9;border-left:4px solid var(--ok);border-radius:10px;padding:13px 15px;margin:4px 0 16px;font-family:var(--font-read);font-size:16.5px;line-height:1.5;color:#21402f}
+  .tryit b{font-weight:600}.tryit em{font-style:italic}.tryit code{font-family:var(--font-mono);font-size:.85em;background:#E1EFE7;padding:1px 5px;border-radius:5px}
+  .node.payoff{border-color:#D9C4E8;background:linear-gradient(180deg,#FCFAFE,#FFF)}
+  .node.payoff .eyebrow{color:var(--pay)}
+  .paytag{display:inline-block;background:var(--pay-soft);color:var(--pay);font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;padding:3px 9px;border-radius:999px;margin-bottom:8px}
+  .step{font-weight:700;color:var(--pay);font-family:var(--font-ui);font-size:15px;margin:18px 0 6px}
+  .tear{border:0;border-top:1px dashed var(--line);margin:18px -18px 16px}
+  .qlabel{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin:0 0 9px}
+  .flags{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+  .flag{font-family:var(--font-ui);font-size:14.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 13px;cursor:pointer;user-select:none;transition:background .12s,border-color .12s,color .12s}
+  .flag:hover{border-color:#C3CCDA}
+  .flag[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .check{background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:6px}
+  .check+.check{margin-top:10px}
+  .check .q{font-family:var(--font-read);font-size:17px;line-height:1.5;color:#2a3342;margin:0 0 10px}
+  .check .q b{font-weight:600}
+  details.notes{margin-top:14px}
+  details.notes summary{font-size:13px;color:var(--muted);cursor:pointer;font-family:var(--font-mono);letter-spacing:.02em}
+  details.notes .body{font-size:14px;color:var(--muted);background:#FBFCFD;border:1px dashed var(--line);border-radius:10px;padding:12px;margin-top:8px;line-height:1.5}
+  details.notes .body b{color:var(--ink)}
+  .overall{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
+  .overall h2{font-family:var(--font-ui);font-size:19px;margin:0 0 4px}
+  .overall .sub{color:var(--muted);font-size:14.5px;margin:0 0 16px}
+  .qblock{margin:0 0 16px}
+  .actions{position:sticky;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(246,247,249,0) 0%,var(--bg) 26%);padding:16px 0 18px;margin-top:8px}
+  .btn{display:block;width:100%;font-family:var(--font-ui);font-size:17px;font-weight:600;border:0;border-radius:12px;padding:15px;cursor:pointer;text-align:center;text-decoration:none}
+  .btn-build{background:var(--ink);color:#fff;margin-bottom:10px}
+  .out{display:none}.out.show{display:block}
+  .logbox{font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:150px;background:#fff;margin:0 0 10px}
+  .send-row{display:flex;gap:10px}
+  .btn-wa{background:var(--wa);color:#053B22;flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:9px}
+  .btn-copy{background:#fff;color:var(--ink);border:1px solid var(--line);flex:0 0 auto;width:104px}
+  .btn-wa svg{width:20px;height:20px;flex:none}
+  .copied{color:var(--ok);font-size:13px;text-align:center;margin:8px 0 0;height:16px;font-weight:600}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin:6px 0 0}
+  @media (max-width:420px){.read{font-size:17.5px}h1{font-size:22px}.node{padding:18px 15px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+</style>
+</head>
+<body>
+<div style="max-width:640px;margin:0 auto;padding:18px 16px 4px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif"><div style="font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#1E4FA3;font-weight:700">Zuba U · Free training</div><h1 style="font-size:22px;margin:6px 0 8px">Networking Foundations</h1><p style="font-size:15px;color:#3b4658;line-height:1.55;margin:0 0 10px">A short, plain-English walk through how the internet actually gets your data where it's going — addresses, NAT, CGNAT, ports, and why being <em>reachable</em> is trickier than it sounds. No jargon assumed; every idea is anchored to something you've already felt — a page that won't load, “server not found,” a video that keeps buffering.</p><p style="font-size:15px;color:#3b4658;line-height:1.55;margin:0 0 10px">The one rule that makes it stick: when a lesson asks you to try something, <b>answer it in your own words before you open “Check your answer.”</b> Recalling it yourself is what turns reading into real understanding.</p><p style="font-size:13px;color:#5B6573;margin:8px 0 4px"><b>Three parts:</b> 1 · Getting where you're going  ·  2 · How addresses run out  ·  3 · Being reachable. Take them straight through, or dip in.</p><p style="font-size:12.5px;color:#8a94a6;margin:12px 0 0">Brought to you by <b>Zuba Broadband</b> — connecting Rwanda.</p></div>
+<section class="ridepart" id="part-foundation">
+<header>
+<div class="wrap">
+<div class="docket"><span>ZUBA · DISPATCH DOCKET</span><span>ADDRESSING / v8</span></div>
+<h1>Getting where you're going</h1>
+<p>Read three short lessons. Tell us exactly where you paused.</p>
+</div>
+</header>
+<div class="wrap">
+
+
+
+<!-- LESSON 1 -->
+<section class="node" data-node="1" data-title="LESSON 1: How data finds a destination">
+<div class="eyebrow">Lesson 01</div>
+<h2>How data finds a destination</h2>
+<div class="read">
+<p>Open WhatsApp and send a message. Open YouTube and start a video. Search something on Google. The information just appears — as if "the internet" were one place your device reaches into.</p>
+<p>It isn't one place, and it isn't one computer. Here is what actually happens.</p>
+<p>Your laptop is a <strong>device</strong> — a computer. So is your phone. The app or website you open runs on another device: a computer in a building somewhere, maybe in another country, always on, waiting to answer requests. (That always-on kind of device is a <strong>server</strong> — a computer that mostly just sits there storing, computing, and answering whoever asks, with almost no one touching it. More on it in the next lesson.)</p>
+<p>So the two ends are not the same: one is the device in front of you, which <em>asks</em>; the other is a server, which <em>answers</em>.</p>
+<p>Keep one more pair separate. The <strong>devices</strong> are those two ends. The <strong>data</strong> is what travels between them: a message, a video, a piece of a page. A device sends or receives; data is the thing that gets sent.</p>
+<p>So "the internet" is not a place or a single computer. It is millions of devices — phones, laptops, and these always-on servers — passing data to each other, all day long. (That is what your "mobile data" gets spent on: real information moving back and forth.)</p>
+<p>Here is the one idea the rest of these lessons build on: a piece of data can't be delivered unless it knows where it is going. Picture each piece of data as a <strong>parcel</strong> handed to a courier. A parcel with no address goes nowhere. Data is the same — every piece carries a destination, or it goes nowhere.</p>
+<p>You have seen what a failed delivery looks like. "This site can't be reached." A page that spins and never loads. Underneath, the plain reason is often exactly this: the data didn't reach the right place, or nothing came back. The rest of this topic is about making that delivery work — and understanding it when it doesn't.</p>
+</div>
+<hr class="tear"/>
+
+
+
+
+<div class="check">
+<p class="q">When you open YouTube, two devices are talking to each other — what are they, and what is the <b>thing that travels</b> between them?</p>
+<textarea class="answer" placeholder="In your own words…"></textarea>
+</div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> device vs data kept apart, and that the two ends are different (one asks, one answers — not two of the same).</div></details>
+</section>
+<!-- LESSON 2 -->
+<section class="node" data-node="2" data-title="LESSON 2: What an address is">
+<div class="eyebrow">Lesson 02</div>
+<h2>What an address is</h2>
+<div class="read">
+<p>Every piece of data names its destination. So what is that destination, exactly?</p>
+<p>It is an <strong>address</strong> — and to keep it apart from a street address, its real name is an <strong>IP address</strong>. It is a unique label for one specific device. <em>Unique</em> is the key word: no two devices online share the same IP address at the same moment, just as no two houses on one street share a number. If two did, your data wouldn't know which one you meant.</p>
+<p>What does it look like? Usually a number, like this:</p>
+<div class="addr">142.250.1.100</div>
+<p>For now, treat it as a unique number that every device online has. (<em>Why</em> it is written in that four-part shape, and why the world is starting to run short of these numbers, comes a little later — there is a real reason.)</p>
+<p>(Wondering why you type "youtube.com" and not a number like that? Good question. A separate system turns the name you type into the number underneath. It is <strong>DNS — the Domain Name System</strong>, and it is the next lesson.)</p>
+<p>Now the part that's easy to miss: <em>both ends</em> need an IP address — not only the website, but your own device too. It makes sense once you see it is a two-way delivery:</p>
+<p>→ Your device needs the <em>server's</em> IP address, so it can send its request to the right place.<br/>
+      → The server needs <em>your device's</em> IP address, so it can send the reply — the actual page or video — back to the right place. Without your address, the reply is ready with nowhere to go.</p>
+<p>So is the website's computer just like your laptop? Almost. Your laptop and a <strong>server</strong> are both computers — the difference is the <em>job</em>. Your laptop is yours: you carry it, and you use it to <em>ask</em>. A server is nobody's personal machine — it sits in a data center and does one thing, all day: wait for requests and <em>answer</em> them. Same kind of device, different role.</p>
+<p>(Two questions naturally come up, both answered soon: where your device's own IP address comes from — it is given to your device when it connects — and whether that address ever changes. Hold them.)</p>
+</div>
+<hr class="tear"/>
+
+
+
+
+<div class="check">
+<p class="q">A friend says: "Sure, Google's computer has an address — but why would my phone need one?" Answer them in a sentence or two.</p>
+<textarea class="answer" placeholder="In your own words…"></textarea>
+</div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> whether "both ends need an IP address" clicks, and whether the server-vs-your-laptop <em>role</em> difference lands (not both ends are servers).</div></details>
+</section>
+<!-- LESSON DNS -->
+<section class="node" data-node="DNS" data-title="LESSON 3: How a name becomes a number (DNS)">
+<div class="eyebrow">Lesson 03</div>
+<h2>How a name becomes a number</h2>
+<div class="read">
+<p>A device's address is a number, like 142.250.1.100. But you type "youtube.com", not a number. So how does the name reach the number?</p>
+<p>The internet keeps a directory — a <strong>phonebook</strong> — that does one job: you give it a name, it gives back the number. Name in, number out. It <em>translates</em> the name you remember into the number your data needs.</p>
+<div class="diagram">
+<svg aria-label="Four steps: you type a name, DNS looks it up and hands back the number, your device sends the request to that number, the server answers." role="img" viewbox="0 0 440 660" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="f_arr" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9AA6B6"></path></marker></defs>
+<text fill="#1E4FA3" font-family="ui-monospace,Menlo,monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" x="220" y="30">DNS · HOW A NAME BECOMES A NUMBER</text>
+<rect fill="#FFFFFF" height="80" rx="14" stroke="#E2E6EC" stroke-width="1.5" width="320" x="60" y="56"></rect>
+<circle cx="88" cy="96" fill="#1B2230" r="14"></circle><text fill="#FFFFFF" font-size="14" font-weight="700" text-anchor="middle" x="88" y="101">1</text>
+<text fill="#5B6573" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="14.5" x="118" y="88">You type a name</text>
+<text fill="#1B2230" font-family="ui-monospace,Menlo,monospace" font-size="17" font-weight="600" x="118" y="113">youtube.com</text>
+<text fill="#9AA6B6" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" x="262" y="113">(a name, not a number)</text>
+<line marker-end="url(#f_arr)" stroke="#9AA6B6" stroke-width="2" x1="220" x2="220" y1="140" y2="176"></line>
+<text fill="#7A8597" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-style="italic" x="232" y="163">data can only travel to a number</text>
+<rect fill="#EAF0FB" height="132" rx="14" stroke="#C7D7F2" stroke-width="1.5" width="360" x="40" y="182"></rect>
+<circle cx="68" cy="214" fill="#1E4FA3" r="14"></circle><text fill="#FFFFFF" font-size="14" font-weight="700" text-anchor="middle" x="68" y="219">2</text>
+<text fill="#163E85" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="15.5" font-weight="700" x="96" y="212">DNS — the internet's phonebook</text>
+<text fill="#2a3342" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="13.5" x="96" y="234">looks up the name, hands back the number</text>
+<rect fill="#FFFFFF" height="34" rx="8" stroke="#C7D7F2" stroke-width="1" width="170" x="96" y="248"></rect>
+<text fill="#163E85" font-family="ui-monospace,Menlo,monospace" font-size="16" font-weight="600" text-anchor="middle" x="181" y="270">142.250.1.100</text>
+<text fill="#1E4FA3" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="13" font-weight="600" x="96" y="302">It looks up only — it never delivers.</text>
+<line marker-end="url(#f_arr)" stroke="#9AA6B6" stroke-width="2" x1="220" x2="220" y1="318" y2="354"></line>
+<rect fill="#FFFFFF" height="84" rx="14" stroke="#E2E6EC" stroke-width="1.5" width="330" x="55" y="360"></rect>
+<circle cx="83" cy="402" fill="#1B2230" r="14"></circle><text fill="#FFFFFF" font-size="14" font-weight="700" text-anchor="middle" x="83" y="407">3</text>
+<text fill="#1B2230" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="15" font-weight="600" x="113" y="395">Your device sends your request</text>
+<text fill="#1B2230" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="15" font-weight="600" x="113" y="416">to that number</text>
+<text fill="#7A8597" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" font-style="italic" x="113" y="433">your device does the sending — not the phonebook</text>
+<line marker-end="url(#f_arr)" stroke="#9AA6B6" stroke-width="2" x1="220" x2="220" y1="448" y2="484"></line>
+<rect fill="#FFFFFF" height="80" rx="14" stroke="#E2E6EC" stroke-width="1.5" width="280" x="80" y="490"></rect>
+<circle cx="108" cy="530" fill="#0F7A4D" r="14"></circle><text fill="#FFFFFF" font-size="14" font-weight="700" text-anchor="middle" x="108" y="535">4</text>
+<text fill="#1B2230" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="15" font-weight="600" x="138" y="524">The server answers</text>
+<text fill="#5B6573" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="13" x="138" y="545">the page or video comes back</text>
+<text fill="#9AA6B6" font-family="-apple-system,Segoe UI,Roboto,sans-serif" font-size="12.5" text-anchor="middle" x="220" y="612">"Server not found" = step 2 came back with no number.</text>
+</svg>
+</div>
+<p>The phonebook's real name is <strong>DNS — the Domain Name System</strong>. You have probably heard the term. That is all it is: the lookup that turns the name you type into the number your data then travels to.</p>
+<p>You have felt it fail. "Server not found" usually means the phonebook couldn't match the name to any number — so there is no address to deliver to, and nothing loads.</p>
+<details class="deep"><summary>Go deeper / another way (optional)</summary><div class="dbody"><em>Step by step:</em> your device has a name but data can only travel to a number — so it asks the phonebook, which looks the name up and hands the number back (it looks up only; it never delivers your data), then your device sends the request to that number and the server answers. <em>Keep straight:</em> the phonebook is <strong>not</strong> your address — your IP is your device's own number; the phonebook is the separate thing that finds a number from a name. <em>And it isn't one book:</em> it's a chain of <strong>DNS servers</strong> — your lookup goes to a nearby one, which asks others until one knows; "Server not found" is the end of that chain with no match. A later lesson walks the whole path.</div></details>
+</div>
+<hr class="tear"/>
+
+
+
+
+<div class="check">
+<p class="q">You type "google.com" and press go, but data can only travel to a <b>number</b>. What turns the name into a number — and after that, what sends your request to it?</p>
+<textarea class="answer" placeholder="In your own words…"></textarea>
+</div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> whether the diagram + "your device sends" makes the handoff clear (what acts after the lookup), and whether "DNS isn't your address" holds.</div></details>
+</section>
+<!-- LESSON 4 — envelope/header -->
+<section class="node" data-node="envelope" data-title="LESSON 4: Where the address lives (the header)">
+<div class="eyebrow">Lesson 04</div>
+<h2>Where the address lives: the label on the envelope</h2>
+<div class="read">
+<p>You now know what an address is, and that both ends have one. But here's the question that's easy to skate past: <em>where does that address actually go?</em> It can't just float alongside your data — something has to carry it.</p>
+<p>Here's the answer, and it's the same parcel from the first lesson, up close. Every piece of data is wrapped like an <strong>envelope</strong>: your actual message sits <em>inside</em>, and the addresses are written <em>on the outside</em>, as a label — a <strong>TO</strong> (the destination) and a <strong>FROM</strong> (your own address, so the reply knows where to come back).</p>
+<div class="diagram">
+<svg aria-label="A packet drawn as an envelope: the destination and return IP addresses are written on the outside as the header, the data sits inside as a letter, and all of it travels as ones and zeroes." font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" role="img" viewbox="0 0 680 470" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="f_cap" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#9AA6B6"></path></marker>
+</defs>
+<!-- letter (the data) tucked inside, peeking out the top -->
+<rect fill="#FFFFFF" height="150" rx="6" stroke="#DCE0E6" stroke-width="1.4" width="270" x="205" y="86"></rect>
+<line stroke="#CDD3DC" stroke-linecap="round" stroke-width="3" x1="227" x2="453" y1="110" y2="110"></line>
+<line stroke="#CDD3DC" stroke-linecap="round" stroke-width="3" x1="227" x2="453" y1="126" y2="126"></line>
+<line stroke="#CDD3DC" stroke-linecap="round" stroke-width="3" x1="227" x2="392" y1="142" y2="142"></line>
+<!-- envelope body -->
+<rect fill="#FBF8F1" height="215" rx="12" stroke="#E3D9C7" stroke-width="1.6" width="380" x="150" y="170"></rect>
+<!-- flap -->
+<path d="M150,170 L340,258 L530,170" fill="#F4EEE0" stroke="#E3D9C7" stroke-linejoin="round" stroke-width="1.4"></path>
+<!-- return address (FROM) -->
+<text fill="#6B7280" font-size="10.5" font-weight="700" letter-spacing="0.04em" x="172" y="192">FROM</text>
+<text fill="#5B6573" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" x="172" y="207">41.207.12.9</text>
+<!-- stamp -->
+<rect fill="#EAF0FB" height="40" rx="4" stroke="#C7D7F2" stroke-width="1.2" width="44" x="470" y="182"></rect>
+<path d="M483,205 l6,-9 6,9 z" fill="#1E4FA3"></path><rect fill="#1E4FA3" height="7" rx="1" width="12" x="486" y="205"></rect>
+<text fill="#1E4FA3" font-size="5.5" font-weight="700" text-anchor="middle" x="492" y="218">ZUBA POST</text>
+<!-- TO / destination address -->
+<text fill="#6B7280" font-size="11" font-weight="700" letter-spacing="0.06em" text-anchor="middle" x="340" y="298">TO</text>
+<text fill="#1E4FA3" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="23" font-weight="600" text-anchor="middle" x="340" y="326">142.250.1.100</text>
+<line stroke="#C7D7F2" stroke-width="1.5" x1="232" x2="448" y1="338" y2="338"></line>
+<!-- callout: header -->
+<text fill="#1B2230" font-size="13" font-weight="700" x="14" y="296">the HEADER</text>
+<text fill="#6B7280" font-size="11.5" x="14" y="313">the address label,</text>
+<text fill="#6B7280" font-size="11.5" x="14" y="328">on the outside —</text>
+<text fill="#6B7280" font-size="11.5" x="14" y="343">read by every router</text>
+<line marker-end="url(#f_cap)" stroke="#9AA6B6" stroke-width="1.4" x1="120" x2="228" y1="318" y2="320"></line>
+<!-- callout: data -->
+<text fill="#1B2230" font-size="13" font-weight="700" x="540" y="108">the DATA</text>
+<text fill="#6B7280" font-size="11.5" x="540" y="125">your message,</text>
+<text fill="#6B7280" font-size="11.5" x="540" y="140">inside</text>
+<line marker-end="url(#f_cap)" stroke="#9AA6B6" stroke-width="1.4" x1="536" x2="478" y1="120" y2="124"></line>
+<!-- binary strip -->
+<text fill="#6B7280" font-size="12" text-anchor="middle" x="340" y="412">On the wire, all of it — label and data alike — is just 1s and 0s.</text>
+<text fill="#5B6573" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" letter-spacing="0.06em" text-anchor="middle" x="340" y="434">01001110 01000101 01010100 01000110 01001001 01001100 01000101</text>
+<text fill="#9AA6B6" font-size="10.5" text-anchor="middle" x="340" y="453">(even the letter “N” travels as 01001110)</text>
+</svg>
+</div>
+<p>That address label on the outside has a name: the <strong>header</strong>.</p>
+<p>And the envelope as a whole — the header on the front, your data inside — has a name too: it's a <strong>packet</strong>. A packet is just the envelope you've been picturing; "packet" is simply the technical word for it.</p>
+<p>Two things fall out of this that matter later:</p>
+<p>→ <strong>The network reads only the label, never the contents.</strong> Each router along the way glances at the <strong>TO</strong> address, sends the packet one hop closer, and passes it on — without ever opening it. That's how data crosses the whole world without anyone in the middle needing to understand what's inside.</p>
+<p>→ <strong>The FROM address is why replies work.</strong> Because your own address rides on the front, the far end knows exactly where to send the answer back — the two-way delivery from the last lesson, made concrete.</p>
+<details class="deep"><summary>Go deeper (optional)</summary><div class="dbody">Because the address rides on the <em>outside</em> and your message sits <em>inside</em>, the network can carry a packet without ever opening it. That same separation is what lets you later <strong>seal the message itself</strong>: put your letter in a <em>locked</em> envelope before it goes inside the addressed one, so only the far end holds the key. The outside still gets it delivered; the inside stays private. That's encryption — a thread for later.</div></details>
+</div>
+<hr class="tear"/>
+
+
+
+
+<div class="check">
+<p class="q"><span aria-hidden="true" style="float:right;margin:0 0 6px 12px"><svg height="50" viewbox="0 0 46 52" width="44"><path d="M11 13 q12 -9 24 0 z" fill="#1E4FA3"></path><rect fill="#163d7d" height="3.5" rx="1.75" width="26" x="10" y="12"></rect><circle cx="23" cy="21" fill="#F1C9A5" r="7.5"></circle><circle cx="20.3" cy="20.5" fill="#1a2233" r="1"></circle><circle cx="25.7" cy="20.5" fill="#1a2233" r="1"></circle><path d="M20.5 24.5 q2.5 -2 5 0" fill="none" stroke="#1a2233" stroke-linecap="round" stroke-width="1"></path><path d="M31 18 q1.6 3 0 4 q-1.6 -1 0 -4z" fill="#7fc2e8"></path><path d="M14 30 q9 -4 18 0 l1.5 15 h-21 z" fill="#0F7A4D"></path><rect fill="#c98a3a" height="12" rx="1.5" width="14" x="16" y="34"></rect><rect fill="#a86f28" height="2" width="14" x="16" y="39"></rect><rect fill="#a86f28" height="12" width="2" x="22" y="34"></rect></svg></span><b>Spot the blunder.</b> Our courier <i>[name — team's pick]</i> grabs your parcel, squints at the <b>TO</b> address, and races off to deliver it — proud of himself. In his hurry, he never noted who it's <em>from</em>. The parcel arrives fine — <b>so what goes wrong next?</b></p>
+<textarea class="answer" placeholder="Your hunch, in your own words…"></textarea>
+</div>
+<details class="notes"><summary>what he got wrong — open after you've answered</summary><div class="body">Nothing can come <b>back</b>. He skipped the <b>FROM</b> — the return address — so the far end has nowhere to send the reply. Your message got there; the answer never will, which is exactly why <em>both</em> addresses ride on every label. (We've all sent a message no one could reply to — now you won't do it on a packet.)</div></details>
+</section>
+<!-- OVERALL -->
+<section class="overall">
+<h2>Across all four</h2>
+<p class="sub">Last two questions, then send.</p>
+
+
+</section>
+</div>
+<div class="wrap">
+
+
+<a href="#part-part1" onclick="event.preventDefault();var t=document.getElementById('part-part1');if(t)t.scrollIntoView({behavior:'smooth',block:'start'});" style="display:block;max-width:560px;margin:12px auto 4px;text-align:center;background:#1E4FA3;color:#fff;text-decoration:none;padding:13px 16px;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:600">Next → How addresses run out</a>
+</div>
+</section>
+<hr style="border:0;border-top:1px dashed #cbd5e4;margin:40px auto;max-width:560px"/>
+<section class="ridepart" id="part-part1">
+<header>
+<div class="wrap">
+<div class="docket"><span>ZUBA · DISPATCH DOCKET</span><span>F2 · PART 1 of 2</span></div>
+<h1>How addresses run out</h1>
+<p>Six short lessons. Tell us exactly where you paused.</p>
+</div>
+</header>
+<div class="wrap">
+<p class="how">Two of these lessons ask you to <b>try something on your own phone</b> — do it; that’s the best part.</p>
+
+
+<!-- cn-0003 -->
+<section class="node" data-node="MAC vs IP" data-title="LESSON 5: Two labels on every device">
+<div class="eyebrow">Lesson 05 · two labels</div>
+<h2>Two labels on every device</h2>
+<div class="read">
+<p>You already know a device needs an address to be reached. Here's something that trips people up: a device actually carries <em>two</em> different labels, and they do different jobs.</p>
+<p>The first is burned into the device at the factory and never changes. It identifies the <em>device itself</em>. Its name is the <strong>MAC address</strong> (Media Access Control) — think of it like a national ID number: it says <em>who</em> this device is, permanently, wherever it goes.</p>
+<p>The second is the <strong>IP address</strong> from before — but here's the new part. A device is <em>not</em> born with an IP address. It's <em>given</em> one when it joins a network, the way you're given a room number when you check into a hotel. Join your home Wi-Fi, you get one IP. Join a café's Wi-Fi, a different one. The IP says <em>where</em> the device can be reached <em>right now</em>.</p>
+<p class="arrow">→ <strong>MAC</strong> — <em>who</em> the device is. Permanent. Set at the factory.<br/>→ <strong>IP</strong> — <em>where</em> it's reachable. Assigned when it joins. Changes as it moves.</p>
+<p>In the parcel-delivery analogy: your MAC is your national ID — it's <em>you</em>, and never changes. Your IP is your current mailing address — where post reaches you <em>now</em>, different when you move house.</p>
+<p>One thing worth settling before we move on: the MAC is permanent and unique to each device — but it's <em>not</em> the address the internet delivers to. Data travels to the IP, the <em>where</em>. And unlike the factory-set MAC, an IP is handed out and reused, never owned. Hold onto that "handed out, not owned" idea — it's about to explain almost everything.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">A laptop connects to your home Wi-Fi, then later to a café's Wi-Fi. One of its two addresses changes and one stays the same — which is which, and why?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> that MAC = permanent identity, IP = assigned/changeable location.</div></details>
+</section>
+<!-- cn-0004 -->
+<section class="node" data-node="scarcity" data-title="LESSON 6: Why addresses are scarce">
+<div class="eyebrow">Lesson 06 · the big cause</div>
+<h2>Why addresses are scarce</h2>
+<div class="read">
+<p>This is the one fact that explains almost everything else about addressing. If you remember nothing else, remember this.</p>
+<p>When IP addresses were designed, each was a number of a fixed size — and "fixed size" has a consequence: there are only so many of them. About <strong>4.3 billion</strong>, total. In the 1980s, with a few thousand computers, that felt endless.</p>
+<p>It wasn't. Count the phones, laptops, servers, routers, TVs, and cameras online today and you're far past 4.3 billion — many times over. <strong>The world ran out of addresses.</strong></p>
+<p>That's the cause. Everything that follows — private addresses, the sharing tricks, the reason your address keeps changing — exists for one reason: <em>there aren't enough public addresses to give every device its own.</em> Each new idea coming up is just another way to cope with that shortage. Keep that sentence in your pocket.</p>
+<p>In the parcel-delivery analogy: imagine the postal system only ever printed about 4.3 billion possible street addresses for the whole planet, and the world outgrew them. You'd have to get clever about <em>sharing</em> — which is exactly what happened.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">In one sentence: why did the world have to invent tricks like <em>sharing</em> addresses at all?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> that scarcity (running out) is the single root cause they can name.</div></details>
+</section>
+<!-- cn-0005 -->
+<section class="node" data-node="private" data-title="LESSON 7: Private addresses">
+<div class="eyebrow">Lesson 07 · reuse, because scarce</div>
+<h2>Private addresses: reuse, because scarce</h2>
+<div class="read">
+<p>So the world is short on addresses. Here's the first trick for coping — and you can see it on your own device right now.</p>
+<p>Open your Wi-Fi settings and look at your device's address. It very likely starts with <code>192.168.</code> or <code>10.</code> — and yet a website never sees <em>that</em> number. That's because it's a <strong>private address</strong>: one of a special set of ranges set aside to be <em>reused</em>.</p>
+<p>Instead of spending a scarce, globally-unique address on every device, networks reuse the same private addresses <em>inside</em> themselves. The address <code>192.168.1.5</code> exists inside millions of homes at once — fine, because a private address only has to be unique <em>inside its own network</em>, not across the whole internet.</p>
+<p>The parcel-delivery analogy shifts here, from the open road to <em>inside an apartment building</em>. Picture a large apartment building with one street address on the front. Inside, the apartments are numbered 1, 2, 3… Every building has an "Apartment 3", and nobody's confused, because "Apartment 3" only means something <em>inside that building</em>. Private addresses are apartment numbers: reused in every network, meaningful only inside.</p>
+<p>Trace it back to the cause: pure scarcity-coping — reuse the same internal numbers everywhere instead of burning a scarce global address on every device.</p>
+<p>But notice where the picture strains: an apartment number alone can't receive a letter from outside the building — and neither can a private address. So how does your device reach the internet <em>at all</em>? That's the next lesson.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">Your phone shows <code>192.168.1.7</code>, and your friend's phone in their house <em>also</em> shows <code>192.168.1.7</code>. How can both exist at once with no conflict?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> that "unique only inside its own network" clicks.</div></details>
+</section>
+<!-- cn-0006 -->
+<section class="node" data-node="NAT" data-title="LESSON 8: How a private network reaches out (NAT)">
+<div class="eyebrow">Lesson 08 · the translator</div>
+<h2>How a private network reaches out (NAT)</h2>
+<div class="read">
+<p>A private address can't be reached from the public internet. So how does your private-addressed laptop load a website?</p>
+<p>Through a <em>translator</em> at the edge of your network: your <strong>router</strong>. It has two faces — one public address facing the internet (the building's street address), and your private devices facing inward.</p>
+<p>When your laptop sends a request, the router swaps the laptop's private "from" address for its <em>own</em> public one, sends it out, and <em>writes a line in its logbook</em> — this reply belongs to your laptop. When the answer returns to the public address, the router checks its logbook and hands it to the right device inside.</p>
+<p>That swap-and-track is called <strong>NAT</strong> (Network Address Translation).</p>
+<p>In the parcel-delivery analogy, the router is the building's <strong>front desk</strong>. Outgoing mail leaves under the building's single street address; replies arrive at the desk, which checks its logbook — <em>"this one's for Apartment 5"</em> — and walks it over. One street address out front; many apartments behind it, sharing it.</p>
+<p>Trace it back to the cause: NAT is the second scarcity trick. One public address now serves a <em>whole network</em>, instead of being spent on just one.</p>
+<div class="diagram">
+<svg aria-label="An apartment building holds several apartments, each a device — a laptop, a phone, a smart TV — with a reused private address. At the building's edge is the front desk, the router doing NAT. It translates the apartment's private address into the building's one public street address, and logs each conversation in a two-column logbook: which apartment is talking to which outside party. When a reply arrives at the public address, the desk reads who it is from, finds the matching apartment, swaps the address back, and delivers it." font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" role="img" viewbox="0 0 380 692" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="a_g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#0F7A4D"></path></marker>
+</defs>
+<!-- street / internet -->
+<rect fill="#1B2230" height="42" rx="9" width="300" x="40" y="14"></rect>
+<text fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle" x="190" y="36">The internet</text>
+<text fill="#A9B6CC" font-size="10.5" text-anchor="middle" x="190" y="50">— the street outside —</text>
+<rect fill="#EAF0FB" height="38" rx="9" stroke="#1E4FA3" stroke-width="1.4" width="188" x="96" y="72"></rect>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="600" text-anchor="middle" x="190" y="89">203.0.113.7</text>
+<text fill="#5B6573" font-size="10" text-anchor="middle" x="190" y="103">the building's one public street address</text>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-width="2" x1="150" x2="150" y1="128" y2="112"></line>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-dasharray="4 3" stroke-width="1.8" x1="230" x2="230" y1="112" y2="128"></line>
+<!-- FRONT DESK = router / NAT -->
+<rect fill="#F6F7F9" height="196" rx="12" stroke="#1E4FA3" stroke-width="1.5" width="336" x="22" y="130"></rect>
+<text fill="#163E85" font-size="13" font-weight="700" x="36" y="151">Front desk = your router (NAT)</text>
+<text fill="#5B6573" font-size="10.3" x="36" y="167">translates the address — and logs each conversation so a reply can find its way home</text>
+<rect fill="#FFFFFF" height="138" rx="7" stroke="#0F7A4D" stroke-width="1.5" width="304" x="38" y="178"></rect>
+<rect fill="#0F7A4D" height="22" rx="7" width="304" x="38" y="178"></rect>
+<text fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle" x="190" y="193">THE LOGBOOK · one line per conversation</text>
+<text fill="#5B6573" font-size="10" font-weight="700" x="52" y="217">apartment</text>
+<text fill="#5B6573" font-size="10" font-weight="700" x="206" y="217">is talking to (outside)</text>
+<line stroke="#E2E6EC" x1="194" x2="194" y1="204" y2="296"></line>
+<line stroke="#E2E6EC" x1="46" x2="334" y1="224" y2="224"></line>
+<text fill="#1B2230" font-size="11" font-weight="700" x="52" y="242">Apt 5</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" x="206" y="242">youtube.com</text>
+<line stroke="#F0F2F5" x1="46" x2="334" y1="250" y2="250"></line>
+<text fill="#1B2230" font-size="11" font-weight="700" x="52" y="268">Apt 18</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" x="206" y="268">wikipedia.org</text>
+<line stroke="#F0F2F5" x1="46" x2="334" y1="276" y2="276"></line>
+<text fill="#1B2230" font-size="11" font-weight="700" x="52" y="294">Apt 42</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" x="206" y="294">a video app</text>
+<text fill="#0F7A4D" font-size="9.6" text-anchor="middle" x="190" y="312">↳ a reply <tspan font-weight="700">from</tspan> one of those names → goes back to <tspan font-weight="700">that</tspan> apartment</text>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-width="2" x1="150" x2="150" y1="356" y2="340"></line>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-dasharray="4 3" stroke-width="1.8" x1="230" x2="230" y1="340" y2="356"></line>
+<!-- ===== the building (with roof cap + windows = apartment-building cue) ===== -->
+<rect fill="#FBFCFD" height="262" rx="11" stroke="#E2E6EC" stroke-width="1.5" width="336" x="22" y="360"></rect>
+<rect fill="#CBD5E4" height="9" rx="4" width="336" x="22" y="360"></rect>
+<g fill="#EAF0FB" stroke="#C7D7F2" stroke-width="0.8">
+<rect height="11" rx="1.5" width="15" x="40" y="376"></rect><rect height="11" rx="1.5" width="15" x="66" y="376"></rect><rect height="11" rx="1.5" width="15" x="92" y="376"></rect><rect height="11" rx="1.5" width="15" x="118" y="376"></rect>
+</g>
+<text fill="#1B2230" font-size="12.5" font-weight="700" x="160" y="386">Your building — private network</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" x="36" y="406">192.168.1.0/24</text>
+<text fill="#5B6573" font-size="9.2" x="210" y="406">apartment № = private address (reused everywhere)</text>
+<!-- Apt 5 — laptop -->
+<rect fill="#FFFFFF" height="56" rx="9" stroke="#E2E6EC" stroke-width="1.3" width="300" x="40" y="416"></rect>
+<g fill="#FFFFFF" stroke="#1B2230" stroke-width="1.3"><rect height="15" rx="1.5" width="24" x="54" y="434"></rect><path d="M50,451 L82,451 L78,455 L54,455 Z" fill="#E2E6EC"></path></g>
+<text fill="#1B2230" font-size="12.5" font-weight="700" x="96" y="440">Apt 5</text>
+<text fill="#5B6573" font-size="10.3" x="96" y="457">laptop</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" text-anchor="end" x="324" y="449">192.168.1.5</text>
+<!-- Apt 18 — phone -->
+<rect fill="#FFFFFF" height="56" rx="9" stroke="#E2E6EC" stroke-width="1.3" width="300" x="40" y="478"></rect>
+<g fill="#FFFFFF" stroke="#1B2230" stroke-width="1.3"><rect height="24" rx="2.5" width="14" x="59" y="494"></rect></g>
+<line stroke="#1B2230" stroke-width="1.1" x1="63" x2="69" y1="499" y2="499"></line><circle cx="66" cy="513" fill="#1B2230" r="1.2"></circle>
+<text fill="#1B2230" font-size="12.5" font-weight="700" x="96" y="502">Apt 18</text>
+<text fill="#5B6573" font-size="10.3" x="96" y="519">phone</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" text-anchor="end" x="324" y="511">192.168.1.18</text>
+<!-- Apt 42 — smart TV -->
+<rect fill="#FFFFFF" height="56" rx="9" stroke="#E2E6EC" stroke-width="1.3" width="300" x="40" y="540"></rect>
+<g fill="#FFFFFF" stroke="#1B2230" stroke-width="1.3"><rect height="17" rx="1.5" width="28" x="52" y="556"></rect></g>
+<line stroke="#1B2230" stroke-width="1.3" x1="66" x2="66" y1="573" y2="578"></line><line stroke="#1B2230" stroke-width="1.3" x1="58" x2="74" y1="578" y2="578"></line>
+<text fill="#1B2230" font-size="12.5" font-weight="700" x="96" y="564">Apt 42</text>
+<text fill="#5B6573" font-size="10.3" x="96" y="581">smart TV</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" text-anchor="end" x="324" y="573">192.168.1.42</text>
+<!-- caption + legend -->
+<text fill="#1B2230" font-size="10" text-anchor="middle" x="190" y="634">One public address out front; many apartments behind it. <tspan font-weight="700">That's NAT.</tspan></text>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-width="2" x1="40" x2="60" y1="650" y2="650"></line>
+<text fill="#5B6573" font-size="9.3" x="66" y="654">you send out — desk swaps to the public address &amp; writes the line</text>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-dasharray="4 3" stroke-width="1.8" x1="40" x2="60" y1="665" y2="665"></line>
+<text fill="#5B6573" font-size="9.3" x="66" y="669">reply returns — desk reads who it's from, finds the line, swaps back</text>
+<text fill="#9AA6B6" font-size="8.6" font-style="italic" text-anchor="middle" x="190" y="684">* two apartments on the same site? one finer detail — a port — keeps them apart (a later lesson).</text>
+</svg>
+</div>
+<div class="tryit"><b>Try it now.</b> Open your phone or laptop's Wi-Fi settings and find this network's IP address — on iPhone, tap the ⓘ beside the network; on Android or Windows, open the network's details. It probably starts <code>192.168.</code> or <code>10.</code>: that's your <b>private</b> address. Now search the web for <em>what is my IP</em>. That number is <b>different</b> — it's the <b>public</b> address your whole network shares. You're seeing both sides of NAT on your own screen.</div>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">When your laptop (private address) loads a website, what address does the website actually see as the sender — and why isn't it your laptop's?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> the website sees the router's public address; the router tracks who to return the reply to.</div></details>
+</section>
+<!-- cn-0007 -->
+<section class="node" data-node="CGNAT" data-title="LESSON 9: When the provider shares too (CGNAT)">
+<div class="eyebrow">Lesson 09 · the target idea</div>
+<h2>When the provider shares too (CGNAT)</h2>
+<div class="read">
+<p>Here's the honest thing about <strong>CGNAT</strong> (<em>Carrier-Grade NAT</em> — your provider running NAT a second time, on top of yours): day to day, you'll never notice it — everything you do dials <em>out</em>, so it just works. It only bites the day something needs to reach you <em>directly</em> from outside: hosting a server, linking two offices, reaching equipment at a remote site. That's almost always a <em>business</em> need — exactly the problem you'll solve for clients. (You may also have spotted the smaller sign: your address keeps changing and isn't really "yours".)</p>
+<p>NAT let one building share one public address. But there still aren't enough to give every <em>building</em> its own. So your <strong>internet provider</strong> — your home-internet company <em>or</em> your mobile network; to the data, they're the same thing — does the very same trick one level up.</p>
+<p>It's the <strong>same translation, stacked twice</strong> — that's the "double" in double NAT: your <strong>router</strong> turns your private <code>192.168.</code> apartment numbers into the one address your provider gave it; your <strong>provider's gateway</strong> turns <em>that</em> into the single real public address the internet sees.</p>
+<p>The address your provider hands your router is itself shared — and you can spot it, because it starts <code>100.64.</code>. So you can read the layer straight off the number: <code>192.168.</code> = inside your building; <code>100.64.</code> = the shared rung between you and your provider; a normal public number = the real street address out front.</p>
+<p>That second, provider-level translation is <strong>CGNAT</strong> (Carrier-Grade NAT — "carrier" just means your internet provider). Two translators stacked is <em>double NAT</em>.</p>
+<details style="margin:.4rem 0 .2rem;padding:.55rem .7rem;background:#F8FAFC;border:1px solid #E2E6EC;border-radius:8px"><summary style="cursor:pointer;font-weight:600;color:#163E85;font-size:.92em">Go deeper (optional) — why a separate <code>100.64.</code> range?</summary><p style="margin:.5rem 0 0">So the two translators never collide. Your home already uses <code>192.168.</code> inside, so if your provider used it for the shared rung too, the numbers would clash. A distinct block was reserved just for that carrier layer. <em>Which</em> numbers got picked is fairly arbitrary — what matters is each block is reserved and separate, so every layer stays recognisable.</p></details>
+<p>The apartment picture, one level out: even <em>building</em> street addresses are now scarce, so a whole <strong>gated complex</strong> of apartment buildings shares one street address, with a central <strong>gatehouse</strong> routing mail. Two gatekeepers between you and outside: the complex gatehouse (your internet provider) and your building's front desk (your router).</p>
+<p>Your <strong>mobile data</strong> has worked this way for years — which is exactly why your mobile network counts as an internet provider here too.</p>
+<p>Trace it back one last time: same scarcity, one level higher — the provider shares one public address across many customers.</p>
+<p>Now the consequence that matters, and it's a split: <strong>sending out still works</strong> — <em>you</em> start the conversation, so the gatehouse and front desk each log a line, and the reply finds its way back. But <strong>being reached from outside breaks</strong> — something outside arrives at a street address shared by hundreds, with nothing in any logbook saying which building, let alone which apartment, so the gatehouse can't place it. That outbound-works / inbound-breaks split is the whole reason behind the customer question we tackle in Part 2.</p>
+<div class="diagram">
+<svg aria-label="Building on the previous NAT diagram. A gated complex is the internet provider's shared network. Your data heads out and upward. Inside the complex, your whole building from the last diagram is collapsed to one unit; its front desk does the first translation, from private 192.168 to a shared 100.64 address. That 100.64 address is only a shared rung, not public. Higher up, at the complex entrance, the gatehouse does a second translation, from 100.64 to the one real public address the whole complex shares. The only new step is that second translation at the gatehouse." font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" role="img" viewbox="0 0 380 452" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="a_g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#0F7A4D"></path></marker>
+</defs>
+<!-- direction cue -->
+<text fill="#0F7A4D" font-size="9.5" font-weight="700" text-anchor="end" x="352" y="70">out ↑</text>
+<text fill="#5B6573" font-size="8.4" text-anchor="end" x="352" y="82">you dial out</text>
+<!-- street -->
+<rect fill="#1B2230" height="36" rx="9" width="260" x="40" y="12"></rect>
+<text fill="#FFFFFF" font-size="13" font-weight="600" text-anchor="middle" x="170" y="35">The internet — the street</text>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-width="2.2" x1="170" x2="170" y1="64" y2="50"></line>
+<!-- gated complex -->
+<rect fill="#F4F6F9" height="356" rx="14" stroke="#1E4FA3" stroke-dasharray="6 4" stroke-width="1.4" width="356" x="12" y="66"></rect>
+<text fill="#163E85" font-size="11.5" font-weight="700" text-anchor="middle" x="190" y="85">The gated complex = your provider (CGNAT)</text>
+<!-- gatehouse = translation 2 -->
+<rect fill="#EAF0FB" height="80" rx="10" stroke="#1E4FA3" stroke-width="1.6" width="328" x="26" y="94"></rect>
+<circle cx="46" cy="114" fill="#1E4FA3" r="11"></circle>
+<text fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle" x="46" y="118">②</text>
+<text fill="#163E85" font-size="11" font-weight="700" x="64" y="118">Gatehouse — your provider translates again</text>
+<rect fill="#FFFFFF" height="30" rx="7" stroke="#1E4FA3" stroke-width="1.3" width="172" x="104" y="128"></rect>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12.5" font-weight="600" text-anchor="middle" x="190" y="148">203.0.113.7</text>
+<text fill="#5B6573" font-size="8.6" text-anchor="middle" x="190" y="169">one real public address — shared by every building</text>
+<!-- shared rung -->
+<text fill="#1B2230" font-size="9.4" text-anchor="middle" x="190" y="192">↕ shared rung <tspan fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-weight="700">100.64.x.x</tspan> — looks public to your router, but isn't</text>
+<!-- arrows up into gatehouse -->
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-width="2" x1="120" x2="120" y1="206" y2="176"></line>
+<line marker-end="url(#a_g)" stroke="#0F7A4D" stroke-width="2" x1="290" x2="290" y1="206" y2="176"></line>
+<!-- ===== Building A: collapsed unit + translation 1 ===== -->
+<rect fill="#FBFCFD" height="150" rx="9" stroke="#E2E6EC" stroke-width="1.5" width="170" x="40" y="208"></rect>
+<rect fill="#CBD5E4" height="9" rx="4" width="170" x="40" y="208"></rect>
+<g fill="#EAF0FB" stroke="#C7D7F2" stroke-width="0.7"><rect height="9" rx="1.3" width="13" x="54" y="223"></rect><rect height="9" rx="1.3" width="13" x="76" y="223"></rect><rect height="9" rx="1.3" width="13" x="98" y="223"></rect><rect height="9" rx="1.3" width="13" x="120" y="223"></rect></g>
+<text fill="#1B2230" font-size="12.5" font-weight="700" text-anchor="middle" x="125" y="252">Building A</text>
+<text fill="#5B6573" font-size="9" text-anchor="middle" x="125" y="270">your whole building —</text>
+<text fill="#5B6573" font-size="9" text-anchor="middle" x="125" y="282">apartments + front desk, from</text>
+<text fill="#5B6573" font-size="9" text-anchor="middle" x="125" y="294">the last diagram</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="9.2" text-anchor="middle" x="125" y="312">192.168.1.x inside</text>
+<circle cx="58" cy="332" fill="#1E4FA3" r="8"></circle>
+<text fill="#FFFFFF" font-size="10" font-weight="700" text-anchor="middle" x="58" y="336">①</text>
+<text fill="#1B2230" font-size="8.8" x="72" y="329">front desk translates</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8.8" x="72" y="340">192.168 → 100.64</text>
+<!-- ===== Building B: faint echo ===== -->
+<rect fill="#FCFDFE" height="150" rx="9" stroke="#E9ECF1" stroke-width="1.3" width="96" x="244" y="208"></rect>
+<rect fill="#DCE2EA" height="9" rx="4" width="96" x="244" y="208"></rect>
+<text fill="#5B6573" font-size="11.5" font-weight="700" text-anchor="middle" x="292" y="248">Building B</text>
+<text fill="#9AA6B6" font-size="8.6" text-anchor="middle" x="292" y="278">same idea</text>
+<text fill="#7E8B9E" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8.6" text-anchor="middle" x="292" y="306">192.168.1.x</text>
+<text fill="#5B6573" font-size="8.6" text-anchor="middle" x="292" y="330">hands up</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="8.6" text-anchor="middle" x="292" y="342">100.64.0.6</text>
+<!-- caption: describes the upward journey, so 1 (low) then 2 (high) reads correctly -->
+<text fill="#1B2230" font-size="10" text-anchor="middle" x="190" y="382">Follow your data <tspan font-weight="700">upward and out</tspan>: through the front desk <tspan fill="#1E4FA3" font-weight="700">①</tspan>, then the gatehouse <tspan fill="#1E4FA3" font-weight="700">②</tspan>.</text>
+<text fill="#1B2230" font-size="10.5" text-anchor="middle" x="190" y="402">That second translation <tspan fill="#1E4FA3" font-weight="700">②</tspan> is the only new thing. <tspan font-weight="700">That's CGNAT.</tspan></text>
+</svg>
+</div>
+<div class="tryit"><b>Spot it yourself (optional).</b> On a router you can log into, check its <b>WAN</b> address. If it sits in <code>100.64.x.x</code> <em>and</em> differs from the public address a <em>what is my IP</em> check returns, you're looking straight at CGNAT's two layers — your router's shared <code>100.64</code> address inside, the carrier's real public one outside.</div>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">CGNAT means many customers share one public address. Using "who started the conversation": why does browsing still work, but being reached <em>directly</em> from outside does <em>not</em>?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> the outbound-works / inbound-breaks split, tied to "who started it." (We dig into the precise version in Part 2.)</div></details>
+</section>
+<!-- cn-0008 -->
+<section class="node" data-node="DHCP" data-title="LESSON 10: Addresses are leased, not owned (DHCP)">
+<div class="eyebrow">Lesson 10 · leased, not owned</div>
+<h2>Addresses are leased, not owned (DHCP)</h2>
+<div class="read">
+<p>Right at the start we said an IP address is <em>handed to</em> a device when it joins, not built into it. Here's how that happens — and why your address quietly changes.</p>
+<p>Because addresses are scarce, nobody gets to <em>keep</em> one they aren't using. Addresses are <strong>leased</strong>. When your phone joins a network, something hands it a free address from a pool, for a while. When it leaves, that address drops back into the pool for the next device. Join again tomorrow and you might get a different one.</p>
+<p>The thing handing them out has a name: <strong>DHCP</strong> (Dynamic Host Configuration Protocol). It runs quietly inside your router — but you've felt it every time your address changed.</p>
+<p class="arrow">→ <strong>Dynamic</strong> — the normal kind. You get whatever's free, and it can change. Nearly every phone and laptop.<br/>→ <strong>Static</strong> — a fixed address, set deliberately so it <em>doesn't</em> change. You arrange one for something that must always be found at the same place: a <strong>server the business runs</strong>, or the <strong>office gateway that branch sites and remote staff connect back to</strong>.</p>
+<p>In the parcel-delivery analogy, a dynamic address is a <strong>hotel room number</strong> — assigned at check-in, handed back at check-out, given to the next guest. A static address is <strong>your own place</strong> — your name permanently on the door, the number always yours.</p>
+<p>Trace it back once more: leasing exists <em>because</em> addresses are scarce. You can't permanently hold one you're not using — so dynamic is the default, and "fixed and yours" is the special case you have to arrange.</p>
+<div class="tryit"><b>Try it now — watch DHCP work.</b> Note your device's current IP (Wi-Fi settings). Now make it rejoin the network — many phones have a <em>Renew Lease</em> button in the network details; otherwise toggle Wi-Fi off and on. Check again: the address was <b>handed to you</b> fresh, sometimes the same, sometimes different. That hand-out is DHCP doing its one job.</div>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">Your phone gets one address on your home Wi-Fi and a different one at work. What's happening — and what's the name of the system handing those addresses out?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> "assigned/leased, not owned," and the word DHCP.</div></details>
+</section>
+<!-- OVERALL -->
+<section class="overall">
+<h2>Across Part 1</h2>
+<p class="sub">Three quick ones, then send.</p>
+
+
+
+</section>
+</div>
+<div class="wrap">
+
+
+<a href="#part-part2" onclick="event.preventDefault();var t=document.getElementById('part-part2');if(t)t.scrollIntoView({behavior:'smooth',block:'start'});" style="display:block;max-width:560px;margin:12px auto 4px;text-align:center;background:#1E4FA3;color:#fff;text-decoration:none;padding:13px 16px;border-radius:10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:600">Next → Being reachable</a>
+</div>
+</section>
+<hr style="border:0;border-top:1px dashed #cbd5e4;margin:40px auto;max-width:560px"/>
+<section class="ridepart" id="part-part2">
+<header>
+<div class="wrap">
+<div class="docket"><span>ZUBA · DISPATCH DOCKET</span><span>F2 · PART 2 of 2</span></div>
+<h1>Being reachable</h1>
+<p>Five lessons, then the payoff: the real client problem, solved.</p>
+</div>
+</header>
+<div class="wrap">
+<p class="how">This is the second half — it builds on Part 1 (how addresses run out). The last section is the payoff: a real customer problem you’ll be able to explain — the “ahh, <em>that’s</em> why we learned all that” moment.</p>
+
+
+<!-- cn-0009 -->
+<section class="node" data-node="inbound/outbound" data-title="LESSON 11: Reaching out vs being reached">
+<div class="eyebrow">Lesson 11 · the asymmetry</div>
+<h2>Two directions: reaching out vs being reached</h2>
+<div class="read">
+<p>A client calls: <em>"I can browse fine, but I can't reach my office camera from home."</em> Before you can fix it — and before you give the wrong answer that <em>sounds</em> right — you need the one idea underneath it: <em>who starts the conversation.</em></p>
+<p class="arrow">→ <strong>Outbound — you start it.</strong> When you open a website, <em>you</em> send the first request. On the way out, your router and your provider each write a line in its own logbook: <em>"a reply is coming back for this customer."</em> So when the answer returns to the shared public address, there's a trail leading it home. This is the everyday direction — which is exactly why nobody notices CGNAT.</p>
+<p class="arrow">→ <strong>Inbound — someone outside starts it.</strong> Now something <em>outside</em> tries to reach you first — and "outside" includes people you <em>want</em>: head office reaching a branch, your own laptop dialling in from a café. Its request lands on that one public address — shared by hundreds of customers — with <em>no logbook entry</em>, because nothing started from inside. The provider's equipment has no way to know which customer it's for, so it's dropped — welcome or not.</p>
+<p>In the parcel-delivery analogy: outbound is mailing a letter <em>with your return address</em> — the front desk logs it, the reply comes straight back. Inbound is a letter posted to "the complex's shared street address, for… someone in there" — the gatehouse can't tell which building, let alone which apartment, so it can't deliver. A courier you were expecting and a stranger off the street fare exactly the same: nothing on file, no delivery.</p>
+<div class="diagram">
+<svg aria-label="Two directions at the front desk, decided by the logbook. When Apartment 5 dials out, the desk writes a line in its logbook, so the reply that comes back is matched to that line and delivered home. When an uninvited stranger arrives from the street, the desk finds no matching line, so the request is dropped. The logbook is the whole difference between a reply getting home and an unsolicited caller being turned away." font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif" role="img" viewbox="0 0 380 606" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="b_g" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#0F7A4D"></path></marker>
+<marker id="b_r" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="8" refy="5" viewbox="0 0 10 10"><path d="M0,0 L10,5 L0,10 z" fill="#B42318"></path></marker>
+</defs>
+<!-- street / internet -->
+<rect fill="#1B2230" height="42" rx="9" width="300" x="40" y="14"></rect>
+<text fill="#FFFFFF" font-size="14" font-weight="600" text-anchor="middle" x="190" y="36">The internet</text>
+<text fill="#A9B6CC" font-size="10.5" text-anchor="middle" x="190" y="50">— the street outside —</text>
+<rect fill="#EAF0FB" height="38" rx="9" stroke="#1E4FA3" stroke-width="1.4" width="188" x="96" y="72"></rect>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="600" text-anchor="middle" x="190" y="89">203.0.113.7</text>
+<text fill="#5B6573" font-size="10" text-anchor="middle" x="190" y="103">the building's one public address</text>
+<!-- LEFT lane: the legit round trip (green) -->
+<line marker-end="url(#b_g)" stroke="#0F7A4D" stroke-width="2" x1="112" x2="112" y1="166" y2="112"></line>
+<text fill="#0F7A4D" font-size="9.4" font-weight="700" text-anchor="end" x="106" y="140">① out</text>
+<line marker-end="url(#b_g)" stroke="#0F7A4D" stroke-dasharray="4 3" stroke-width="1.8" x1="150" x2="150" y1="112" y2="166"></line>
+<text fill="#0F7A4D" font-size="9.4" font-weight="700" x="156" y="140">② reply</text>
+<!-- RIGHT lane: the uninvited stranger (red) -->
+<line marker-end="url(#b_r)" stroke="#B42318" stroke-width="2" x1="258" x2="258" y1="112" y2="166"></line>
+<text fill="#B42318" font-size="9.4" font-weight="700" x="266" y="136">a stranger,</text>
+<text fill="#B42318" font-size="9.4" font-weight="700" x="266" y="147">uninvited</text>
+<!-- FRONT DESK = router / NAT + the LOGBOOK (the adjudicator) -->
+<rect fill="#F6F7F9" height="188" rx="12" stroke="#1E4FA3" stroke-width="1.5" width="336" x="22" y="168"></rect>
+<text fill="#163E85" font-size="13" font-weight="700" x="36" y="189">Front desk = your router (NAT)</text>
+<text fill="#5B6573" font-size="10.3" x="36" y="205">for anything arriving, it checks the logbook: is there a line for this?</text>
+<rect fill="#FFFFFF" height="112" rx="7" stroke="#0F7A4D" stroke-width="1.5" width="304" x="38" y="214"></rect>
+<rect fill="#0F7A4D" height="22" rx="7" width="304" x="38" y="214"></rect>
+<text fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle" x="190" y="229">THE LOGBOOK · a line for each conversation you started</text>
+<text fill="#5B6573" font-size="10" font-weight="700" x="52" y="253">apartment</text>
+<text fill="#5B6573" font-size="10" font-weight="700" x="200" y="253">is talking to (outside)</text>
+<line stroke="#E2E6EC" x1="188" x2="188" y1="240" y2="320"></line>
+<line stroke="#E2E6EC" x1="46" x2="334" y1="260" y2="260"></line>
+<text fill="#1B2230" font-size="11" font-weight="700" x="52" y="279">Apt 5</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" x="200" y="279">youtube.com</text>
+<text fill="#1B2230" font-size="9.5" text-anchor="middle" x="190" y="305"><tspan fill="#0F7A4D" font-weight="700">reply from youtube.com</tspan> → matches Apt 5's line · <tspan fill="#B42318" font-weight="700">stranger</tspan> → no line, nothing matches</text>
+<!-- verdicts out of the desk -->
+<line marker-end="url(#b_g)" stroke="#0F7A4D" stroke-dasharray="4 3" stroke-width="1.8" x1="150" x2="150" y1="356" y2="392"></line>
+<text fill="#0F7A4D" font-size="9.6" font-weight="700" x="158" y="376">✓ matched → delivered</text>
+<line stroke="#B42318" stroke-width="2" x1="258" x2="258" y1="356" y2="372"></line>
+<g stroke="#B42318" stroke-width="2.4"><line x1="251" x2="265" y1="377" y2="391"></line><line x1="265" x2="251" y1="377" y2="391"></line></g>
+<text fill="#B42318" font-size="9.6" font-weight="700" x="276" y="388">✗ dropped</text>
+<!-- the home apartment (roof + window cue) -->
+<rect fill="#FBFCFD" height="70" rx="11" stroke="#E2E6EC" stroke-width="1.5" width="336" x="22" y="396"></rect>
+<rect fill="#CBD5E4" height="9" rx="4" width="336" x="22" y="396"></rect>
+<g fill="#EAF0FB" stroke="#C7D7F2" stroke-width="0.8"><rect height="11" rx="1.5" width="15" x="40" y="412"></rect><rect height="11" rx="1.5" width="15" x="66" y="412"></rect><rect height="11" rx="1.5" width="15" x="92" y="412"></rect></g>
+<rect fill="#FFFFFF" height="40" rx="8" stroke="#E2E6EC" stroke-width="1.3" width="222" x="120" y="418"></rect>
+<g fill="#FFFFFF" stroke="#1B2230" stroke-width="1.3"><rect height="15" rx="1.5" width="24" x="134" y="429"></rect><path d="M130,446 L162,446 L158,450 L134,450 Z" fill="#E2E6EC"></path></g>
+<text fill="#1B2230" font-size="12" font-weight="700" x="176" y="435">Apt 5</text>
+<text fill="#5B6573" font-size="10.2" x="176" y="451">laptop</text>
+<text fill="#163E85" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11.5" text-anchor="end" x="330" y="443">192.168.1.5</text>
+<!-- caption + legend -->
+<text fill="#1B2230" font-size="10.4" text-anchor="middle" x="190" y="490">Outbound writes a line, so the reply gets home. Unsolicited inbound has no line —</text>
+<text fill="#1B2230" font-size="10.4" text-anchor="middle" x="190" y="504">so it's dropped. <tspan font-weight="700">The logbook is the whole difference.</tspan></text>
+<line marker-end="url(#b_g)" stroke="#0F7A4D" stroke-width="2" x1="40" x2="60" y1="524" y2="524"></line>
+<text fill="#5B6573" font-size="9.3" x="66" y="528">you send out — the desk writes the line</text>
+<line marker-end="url(#b_g)" stroke="#0F7A4D" stroke-dasharray="4 3" stroke-width="1.8" x1="40" x2="60" y1="539" y2="539"></line>
+<text fill="#5B6573" font-size="9.3" x="66" y="543">reply matches a line — delivered home</text>
+<line marker-end="url(#b_r)" stroke="#B42318" stroke-width="2" x1="40" x2="60" y1="554" y2="554"></line>
+<text fill="#5B6573" font-size="9.3" x="66" y="558">uninvited inbound — no line — dropped</text>
+<text fill="#9AA6B6" font-size="8.6" font-style="italic" text-anchor="middle" x="190" y="582">* under CGNAT the same check happens again at the carrier's gatehouse — and you can't write in that logbook (next lessons).</text>
+</svg>
+</div>
+<p><strong>Now the part that keeps you honest</strong> — because here the easy answer is wrong. This does <strong>not</strong> mean you're unreachable. Almost everything that <em>feels</em> like being reached actually works, because something on your side dialled <em>out</em> first. That office camera the client is worried about? It very likely works remotely — because the camera holds an outbound connection up to its vendor's cloud, and the phone reaches the same cloud; both dialled out, each has a logbook entry, so they meet in the middle.</p>
+<p>What truly breaks is being a <strong>direct, unsolicited destination</strong>: something outside connecting <em>straight to a service at your address</em>, with no middleman. And for a Zuba client, that's where real money is on the line: linking two branch offices, reaching equipment at a remote site without a vendor's cloud, hosting their own server in-country — often the very function they bought a solution for. Every one of those needs the same thing — to be reachable <em>directly</em>, at an address that's theirs and stays put: <strong>a stable, directly-reachable endpoint.</strong> That's the target everything from here builds toward — and the next three ideas (ports, how a conversation opens, and port forwarding) are how you get there.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">A friend can't connect to a game server on your home PC, yet your phone streams video fine — explain the difference using "who started the conversation." Then the harder half: why does your <em>office camera app</em> still work from across town?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> outbound has a logbook entry, inbound doesn't; <b>and</b> that "not unreachable" lands — the camera works because it dialled out to a cloud.</div></details>
+</section>
+<!-- cn-0011 -->
+<section class="node" data-node="ports" data-title="LESSON 12: One address, many services (ports)">
+<div class="eyebrow">Lesson 12 · address + port</div>
+<h2>One address, many services (ports)</h2>
+<div class="read">
+<p>These two show up the moment you touch a firewall rule or set up remote access — <em>"open port 443," "forward port 3389."</em> Here's what a port actually is, because you can't diagnose a connection without one.</p>
+<p>An address gets data to the right <em>device</em>. But one device runs many services at once — a laptop loading a web page, on a video call, and syncing files all in the same moment. So how does incoming data reach the right <em>service</em>? A second number: a <strong>port</strong>.</p>
+<p>A port is a <strong>number that labels a service</strong>. The full destination is always address <strong>+ port</strong>, written with a colon: <code>203.0.113.7:443</code>. Common services have standard numbers — <code>443</code> secure web, <code>22</code> remote terminal, <code>3389</code> remote desktop. The address gets data to the device; the port says <em>which service on it</em>. And note who does the work: the port decides nothing — it's just the label. The <strong>receiving device</strong> reads that number and hands the data to the matching service.</p>
+<p><strong>Handy reference — the ports you'll meet most:</strong></p>
+<table style="border-collapse:collapse;font-size:14px;margin:4px 0"><tr><th style="text-align:left;padding:3px 14px 3px 0">Port</th><th style="text-align:left;padding:3px 0">Service</th></tr><tr><td style="padding:2px 14px 2px 0"><code>443</code></td><td>HTTPS — secure web</td></tr><tr><td style="padding:2px 14px 2px 0"><code>80</code></td><td>HTTP — plain web</td></tr><tr><td style="padding:2px 14px 2px 0"><code>22</code></td><td>SSH — remote terminal</td></tr><tr><td style="padding:2px 14px 2px 0"><code>3389</code></td><td>RDP — remote desktop</td></tr><tr><td style="padding:2px 14px 2px 0"><code>53</code></td><td>DNS — name lookups</td></tr></table>
+<p>Where a port actually <em>lives</em>: each service is a separate program on the device, each <strong>listening on a claimed number</strong> — the web-server program on <code>443</code>, remote desktop on <code>3389</code>. ("Virtual" just means it's a software convention, not a socket you can point at — but there's always a real program on the other end.) And keep one thing separate: a port says <em>which</em> service, nothing about <em>how</em> the conversation runs — TCP vs UDP (next) is a separate choice, and the same number <code>443</code> exists as a TCP port and, independently, a UDP port. A port isn't "a UDP port" by nature; it's just a label.</p>
+<p>In the parcel-delivery analogy: the address gets the parcel to the right device. Zoom in, and that device runs several services the way a business runs departments. The port is the <strong>"Attention:" line</strong> on the parcel — <em>[address], Attention: Legal Department.</em> Same street address; it just names which desk handles it. Notice it's a <em>different kind</em> of sub-address than a street or apartment number — not another one of those, but a marker for <em>which function</em> inside.</p>
+<p>This also sharpens the <strong>logbook entry</strong> from <em>Reaching out vs being reached</em>: the line your router logs on the way out isn't just your address — it's your address <em>and a port</em>. Every conversation is pinned to one service, so the replies to your web page never get mixed up with the replies to your call.</p>
+<p>Here's exactly when this lands on your desk. A client wants head-office staff to reach a <strong>server</strong> — or the CCTV recorder, or the phone system — at a branch, <em>from outside.</em> The standard action is one line on the branch router: <strong>forward the port</strong> that service runs on, so outside requests reach the right machine inside. You'll set that up or explain why it isn't working. It's also the language your <strong>firewall</strong> work is written in — a rule is <em>allow this port, block that one.</em> So ports aren't trivia; they're the unit the job is expressed in. <em>(And the hook for what's coming: try that same port-forward on a <strong>CGNAT</strong> line and it won't connect — exactly the problem the next lessons solve.)</em></p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">Your laptop is one device with one address, yet it's loading a web page and on a video call at the same time, and the two never get tangled. What keeps them apart?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> port labels the service; the <em>device</em> reads it and routes; address+port together.</div></details>
+</section>
+<!-- cn-0012 -->
+<section class="node" data-node="TCP/UDP" data-title="LESSON 13: How a conversation opens (TCP/UDP)">
+<div class="eyebrow">Lesson 13 · the handshake</div>
+<h2>How a conversation opens (TCP and UDP)</h2>
+<div class="read">
+<p>You'll set up VPNs and you'll troubleshoot <em>"why won't this connect / why does it keep dropping."</em> The difference between guessing and knowing is understanding how a conversation <em>starts</em>. There are two styles.</p>
+<p class="arrow">→ <strong>TCP</strong> opens with a <strong>handshake</strong> — a quick "can we talk?" / "yes, go ahead" / "thanks" before any real data moves. That handshake is <em>exactly</em> the moment your router and your provider each write a line in its own logbook. So a TCP conversation has a clear, trackable beginning. (Web, email, file transfer, remote desktop.)</p>
+<p class="arrow">→ <strong>UDP</strong> skips the handshake — it just fires data off and hopes (it's <em>connectionless</em>). With no clear "start" to latch onto, the NAT can't tie a clean logbook entry to an opening; instead it keeps a tentative entry alive on a <strong>timer</strong> and erases it after a stretch of quiet. (Voice and video calls, gaming, DNS — and, importantly, <strong>most VPNs run over UDP</strong>.)</p>
+<p>In the parcel-delivery analogy: TCP is a <strong>signed-for</strong> delivery — both sides agree before anything ships. UDP is a <strong>postcard</strong> dropped in the slot — no confirmation, just sent.</p>
+<p><strong>Why two styles exist at all</strong> — it's a trade between <em>getting everything</em> and <em>getting it now.</em> TCP guarantees the whole message arrives, in order, re-sending anything lost — right for a web page, a file, an email, where one missing piece corrupts the result. UDP gives that up on purpose: in a live voice or video call you <em>can't</em> stop to re-send a lost packet — by the time it arrived it'd be a slice of video from a second ago, useless, and it would only jam up the live picture. So for real-time, "send it and move on" beats "send it and be sure."</p>
+<p>Here's why it earns its place (and we stop here — <em>how</em> TCP guarantees delivery is a later lesson): the VPN you deploy for a client almost certainly rides <strong>UDP</strong>, and UDP behind CGNAT lives on that timer. So when a client's tunnel <em>"works, then quietly dies after it's been idle,"</em> this is often the reason — the logbook entry timed out and was erased.</p>
+<p><strong>The one-line takeaway:</strong> TCP's handshake gives the NAT a solid, tracked connection to hold onto; UDP gives it only a timer — so an idle UDP tunnel quietly drops, while a TCP session stays put.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">A client's VPN tunnel works, then silently drops after a few idle minutes on a CGNAT line. Given how UDP is handled at the NAT, why might that happen — and how is it different from a TCP web session that stays put?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> handshake = the logbook entry; UDP = timer, so idle tunnels can lapse.</div></details>
+</section>
+<!-- cn-0013 -->
+<section class="node" data-node="port forwarding" data-title="LESSON 14: Port forwarding — and why CGNAT defeats it">
+<div class="eyebrow">Lesson 14 · the fix that fails</div>
+<h2>Letting the outside in, on purpose — and why CGNAT won't let you</h2>
+<div class="read">
+<p>This is the first fix any technician reaches for — and the exact moment you'll realise a CGNAT client is stuck. Both halves matter.</p>
+<p>Normally, unsolicited inbound is dropped (no logbook entry). But you can write a <em>permanent</em> logbook entry yourself, in advance. You tell your router: <em>"any request that arrives on port 3389 — send it straight to the server at <code>192.168.1.42</code>."</em> That's <strong>port forwarding</strong>: a <em>standing line</em> in your front desk's logbook, one you write yourself — <em>always send this port's inbound traffic to this one machine.</em> On an ordinary connection — one where you have your <em>own</em> public address — this is how you host a server or reach a device from outside. Standard fix.</p>
+<p>Now the catch, and it's the whole point. Port forwarding only writes in <strong>your router's own logbook</strong> — translation ① from the double-NAT picture. Under CGNAT there's a <strong>second</strong> one — the <strong>carrier's</strong> logbook, kept at the gatehouse — translation ② — and you can't write in it, can't configure it, and it sits on an address that isn't even yours. So you can fill <em>your router's</em> logbook with standing instructions and outsiders <em>still</em> can't get past the gatehouse: <strong>the carrier's logbook</strong> has no line for you, and it's not yours to add one.</p>
+<p>That's the payoff in a client call: the instant port-forwarding "doesn't work" on a CGNAT line, you stop fiddling and <em>recognise the diagnosis</em> — "you're behind CGNAT; no router setting fixes this; you need a stable, directly-reachable endpoint by another route." Naming that correctly in thirty seconds beats an hour of config — and it's where what Zuba actually sells begins.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">A client wants head office to reach a server at a branch that's behind CGNAT. You forward the port on the branch router and it <em>still</em> won't connect. In a sentence or two: why — and what does that failure tell you the client really needs?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> wrote in ① (their own logbook) but ② is the carrier's logbook they can't write in; the client needs a stable, directly-reachable endpoint another way.</div></details>
+</section>
+<!-- cn-0010 -->
+<section class="node" data-node="stable endpoint" data-title="LESSON 15: A stable, directly-reachable endpoint">
+<div class="eyebrow">Lesson 15 · the need, named</div>
+<h2>What you actually need: a stable, directly-reachable endpoint</h2>
+<div class="read">
+<p>Now you can name, precisely, what a CGNAT client is missing — and it's narrower and sharper than "they can't be reached."</p>
+<p>Remember: they're <em>not</em> unreachable in general — anything relayed through a cloud they dialled out to works fine. What they lack is a <strong>stable, directly-reachable endpoint</strong>.</p>
+<p>The word, pinned down — and <em>located.</em> An <strong>endpoint</strong> (more precisely a <strong>connection endpoint</strong>) is <em>a place a connection can be made to</em> — concretely, <strong>a service running on a machine, reachable at an address + port</strong> (from <em>One address, many services</em>: the address reaches the machine, the port the service on it). It's a real program on a real computer sitting somewhere — not an abstraction, and <em>not the whole device</em>: one machine can offer several endpoints, one per service. So picture an actual machine with its <strong>own public address</strong>, out on the open internet where any outsider can reach it — a small server the client rents or runs, sitting <em>outside</em> the CGNAT. (The hunch that it's "a paid-for service on a server outside my CGNAT" is exactly right.) For it to do its job, three things must be true at once — and "the client" is who each one is about:</p>
+<p class="arrow">→ <strong>The address is the client's alone, not shared</strong> — so an inbound request lands on <em>that client's endpoint</em>, not on one address split across hundreds of customers. <em>(CGNAT removes this.)</em><br/>→ <strong>The address is stable, not changing</strong> — so whoever is connecting can still find the endpoint next week. <em>(Dynamic leasing removes this.)</em><br/>→ <strong>The endpoint can accept unsolicited inbound</strong> — so an outside-started connection isn't dropped. <em>(NAT drops it by default; under CGNAT, port forwarding can't restore it.)</em></p>
+<p>On a shared, dynamic connection a client has <em>none</em> of the three — and for streaming video that's fine, because they only ever start conversations outward. But the moment they need to be a <em>direct destination</em> — two offices linked, a server hosted in-country, equipment reached at a remote site without a vendor's cloud — they need that endpoint, and an ordinary CGNAT line can't give it.</p>
+<p>In the parcel-delivery analogy: think of a <strong>rented PO box at the post office</strong> — a fixed, public address that's the client's alone, that the post office always delivers to, and that accepts mail from anyone. It isn't the client's home (behind the complex gatehouse, unreachable from outside); it's a separate, reachable point the client rents <em>because</em> home can't be reached directly — not a shared complex address, not a hotel room that changes next week, not a building that only ever sends mail <em>out</em>.</p>
+<p>Trace it home: addresses are <em>scarce</em> → so they're <em>shared</em> (NAT, CGNAT) and <em>leased</em> (dynamic) → so by default a client is neither uniquely addressed, nor stable, nor inbound-capable → so when they genuinely need to be reached directly, it has to be <em>arranged on purpose</em>. How you arrange it is the last section.</p>
+</div>
+<hr class="tear"/>
+
+
+<div class="check"><p class="q">Name the <em>three</em> properties an address needs for an outsider to reach a client directly — and say which one CGNAT removes, which one dynamic addressing removes, and which one port forwarding <em>can't</em> restore under CGNAT.</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> all three properties named and matched to what removes each.</div></details>
+</section>
+<!-- APPLICATION / PAYOFF -->
+<section class="node payoff" data-node="application" data-title="PAYOFF: Solving a real client's CGNAT problem">
+<span class="paytag">THE PAYOFF · why we learned all of this</span>
+<h2>"Make our sites reachable" — solving it for a client</h2>
+<div class="read">
+<p>A client runs a head office and two branch sites, each on Starlink. They want three ordinary things: the branches to talk to head office over a secure <strong>site-to-site VPN</strong>; head office to <strong>reach the cameras/NVR and a server</strong> at each branch <em>directly</em> (not via a vendor cloud); and to keep that traffic <strong>in-country</strong>. Their last IT person spent a day forwarding ports and got nowhere. You can now solve this in minutes.</p>
+<p class="step">1 · Recognise it (10 seconds)</p>
+<p>Check the branch router's WAN address. If it's in <code>100.64.x.x</code> <em>and</em> a public-IP checker shows a different address, the site is behind <strong>CGNAT</strong>. That single fact closes the case on the day of port-forwarding: the <strong>inner</strong> translation (your router's, ①) was never the problem — the <strong>outer</strong> one is the carrier's (Starlink's CGNAT, ②), which the client doesn't control.</p>
+<p class="step">2 · Name the need</p>
+<p>The client needs a <strong>stable, directly-reachable endpoint</strong> — three properties at once: <strong>yours</strong> (CGNAT removes this), <strong>stable</strong> (dynamic leasing removes this), and <strong>inbound-capable</strong> (port forwarding can't restore this under CGNAT).</p>
+<p class="step">3 · What CGNAT actually breaks</p>
+<p>All one root — the site can't be an unsolicited inbound destination. <strong>Site-to-site VPN is the headline:</strong> a tunnel needs at least one reachable end, so if <em>both</em> branches are on CGNAT, <em>neither</em> can reach the other and the direct tunnel never forms. Then: reaching on-site cameras/servers without a vendor cloud; self-hosting in-country; on-site VoIP; and shared-IP collateral (one public IP shared by hundreds, so geolocation is wrong and one bad neighbour can get it blocklisted for all). Starlink also blocks outbound mail (<code>TCP/25</code>) and Windows file-sharing (<code>TCP/445</code>) for everyone.</p>
+<p class="step">4 · The Starlink reality (current)</p>
+<p>Default is CGNAT, inbound blocked. A <strong>public IP</strong> is an optional toggle on Priority plans — but it's public, <em>not truly static</em> (it can change), and the stock Starlink router can't even port-forward without a third-party router. So the best Starlink-native answer is a wobbly public address on <em>one</em> link — and nothing for two CGNAT sites that both need reaching.</p>
+<p class="step">5 · The Zuba answer — and why it works</p>
+<p>Stop trying to <em>receive</em> at the CGNAT address. Flip it into something CGNAT can't block: <strong>dial out.</strong> Zuba puts a <strong>Peplink</strong> device at each site running <strong>SpeedFusion</strong> — an encrypted tunnel from the site <em>outbound</em> to a <strong>FusionHub</strong>, a reachable endpoint Zuba hosts in a datacentre with a real, static public IP (and, for sovereignty, in-country). Because the site <em>starts</em> that tunnel, it's an <em>outbound</em> conversation — so it always has a logbook entry and always works <strong>through</strong> CGNAT. The hub becomes the site's stable, directly-reachable endpoint.</p>
+<p>In the parcel-delivery analogy, every piece named: your shared <strong>complex address</strong> is your CGNAT line, where you can't receive mail — so you rent a <strong>PO box at an always-open downtown depot</strong>, and that PO box is the <strong>FusionHub</strong> (yours, fixed, reachable). You run <strong>your own courier</strong> — the <strong>SpeedFusion tunnel</strong> — between your site and the box. Because <em>you</em> send the courier out, it sails through the <strong>gatehouse</strong> (CGNAT). Now anyone can address mail to your box and your courier brings it home — and two branches running couriers to the <em>same depot</em> exchange mail directly. That's the site-to-site VPN, neither branch ever reachable at its own address. And because it's Peplink, the same move adds <strong>bonding</strong> (Starlink + fibre + cellular as one) and <strong>failover</strong>.</p>
+<p class="step">6 · Why this <em>is</em> the business</p>
+<p>Every one of the client's three asks is now the same move: site-to-site (couriers to a shared depot), reaching equipment (mail to the box), in-country (hub placed locally). Competitors sell the dish, the SIM, the pipe; the thing that turns a CGNAT-crippled satellite link into a reachable, bonded, sovereign business network is exactly this. The whole chain existed so you can walk into that room, diagnose it in two minutes, and explain <em>why</em> the fix works.</p>
+</div>
+<hr class="tear"/>
+
+<p class="qlabel">Be honest: did it make you go "ahh, THAT's why we learned all that"? Or did it lose you somewhere?</p>
+<div class="check"><p class="q">A client has two shops, both on Starlink Residential, and wants them linked by VPN. What's the one fact that tells you a standard tunnel between them is impossible — and why doesn't upgrading one shop to a Starlink "public IP" fully fix it?</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<div class="check"><p class="q">Explain, using "who started the conversation," why a tunnel out to a hub reaches the site reliably even though nothing can reach that site's Starlink address directly.</p><textarea class="answer" placeholder="In your own words…"></textarea></div>
+<details class="notes"><summary>Check your answer</summary><div class="body"><b>A good answer covers:</b> the whole arc converging — CGNAT recognised, the need named, and "dial out = always has a logbook entry" as the reason the fix works.</div></details>
+</section>
+<!-- OVERALL -->
+<section class="overall">
+<h2>Across the whole chain</h2>
+<p class="sub">Last few — these matter most. Then send.</p>
+
+
+
+
+</section>
+</div>
+<div class="wrap">
+
+
+</div>
+</section>
+
+
+
+
+</body>
+</html>
