@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peplink Task Ratings</title>
+<style>
+:root{
+  --bg:#FBFAF7; --card:#FFFFFF; --ink:#181825; --muted:#5E5E6A; --line:#E6E2DA;
+  --accent:#FF8000; --accent-ink:#181825; --sel:#181825; --sel-ink:#FFFFFF; --ok:#2E7D4F;
+  --wa:#1FA855;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14141C; --card:#1E1E28; --ink:#F1F0EC; --muted:#A8A7B2; --line:#33323E;
+    --accent:#FF8F1F; --accent-ink:#14141C; --sel:#F1F0EC; --sel-ink:#14141C; --ok:#5CC48A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14141C; --card:#1E1E28; --ink:#F1F0EC; --muted:#A8A7B2; --line:#33323E;
+  --accent:#FF8F1F; --accent-ink:#14141C; --sel:#F1F0EC; --sel-ink:#14141C; --ok:#5CC48A;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:#181825;color:#fff;padding:14px 16px;position:sticky;top:0;z-index:5}
+header .row{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;font-weight:700}
+.progress{margin-left:auto;font-size:14px;opacity:.9}
+.bar{max-width:760px;margin:8px auto 0;height:6px;background:#3a3a4a;border-radius:3px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:#FF8000;transition:width .2s}
+main{max-width:760px;margin:0 auto;padding:16px}
+.intro{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.intro p{margin:.4em 0}
+label.name{display:block;font-weight:600;margin-top:10px}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+textarea{min-height:70px;resize:vertical}
+.task{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.task.done{border-left:5px solid var(--ok)}
+.task h2{font-size:16px;margin:0 0 10px;font-weight:600}
+.task h2 .n{color:var(--muted);font-weight:500;margin-right:6px}
+.q{margin:8px 0}
+.q .label{font-size:13px;color:var(--muted);margin-bottom:4px}
+.opts{display:flex;flex-wrap:wrap;gap:6px}
+.opts button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:7px 12px;min-height:38px;cursor:pointer}
+.opts button[aria-pressed="true"]{background:var(--sel);color:var(--sel-ink);border-color:var(--sel)}
+.note{margin-top:8px}
+.note summary{font-size:13px;color:var(--muted);cursor:pointer}
+h3{font-size:16px;margin:24px 0 8px}
+.send{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:20px 0 40px}
+.btn{display:inline-block;font:inherit;font-weight:700;border:0;border-radius:10px;padding:12px 18px;cursor:pointer;margin:6px 8px 6px 0}
+.btn.wa{background:var(--wa);color:#fff}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.msg{font-size:14px;color:var(--muted);margin-top:8px}
+.missing{color:#C0392B;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <div class="row"><h1>Peplink task ratings</h1><div class="progress" id="prog">0 of 40 rated</div></div>
+  <div class="bar"><span id="barfill"></span></div>
+</header>
+<main>
+  <div class="intro">
+    <p><strong>40 Peplink tasks.</strong> For each one, tap how often it comes up in your work. It takes about 5 minutes.</p>
+    <p>The order is not a ranking. If a task names several ways of doing it, rate the way you usually do it. Your answers are saved on this phone as you go, so you can stop and come back.</p>
+    <p>When you're done, tap <strong>Send via WhatsApp</strong> at the bottom.</p>
+    <label class="name" for="who">Your name</label>
+    <input type="text" id="who" placeholder="Name" autocomplete="name">
+  </div>
+
+  <div id="tasks"></div>
+
+  <h3>Tasks we do that aren't on this list</h3>
+  <textarea id="extra" placeholder="One per line, with how often you do it if you can"></textarea>
+
+  <div class="send">
+    <button class="btn wa" id="wa">Send via WhatsApp</button>
+    <button class="btn sec" id="copy">Copy answers</button>
+    <div class="msg" id="msg"></div>
+  </div>
+</main>
+
+<script>
+const TASKS = [
+"Ask the client the questions that size the job before recommending any equipment.",
+"Choose a Peplink model for a site.",
+"Work out which care plan and licences a quote needs.",
+"Build a quote: the parts list, the part numbers and the price.",
+"Set up the local ISP connection on the router (automatic address, fixed address or PPPoE).",
+"Connect a Starlink to the router, with the Starlink's own router in bypass mode.",
+"Check which Starlink plan the client is on and whether its public address option is switched on.",
+"Add a new router to InControl2 and confirm it shows online.",
+"Log in to a router's own web admin page for the first time and change the default password.",
+"Choose which connection is used first and which is the backup.",
+"Set the health check that tells the router a connection has died.",
+"Set the router's LAN address and DHCP range.",
+"Set up staff and guest Wi-Fi on the access points the router manages.",
+"Save a backup of the router's settings once the setup works.",
+"Set up a SIM card as a backup connection.",
+"Install the router in drop-in mode beside the client's own router or firewall.",
+"Switch on the shared IP option so the client's one public address is shared and no spare address is needed.",
+"Add a second internet connection to a router that is in drop-in mode.",
+"Test SpeedFusion hot failover by unplugging a connection under a live tunnel.",
+"Set up a SpeedFusion tunnel to SpeedFusion Connect (Peplink's hosted service).",
+"Set up a SpeedFusion tunnel to a second Peplink or a cloud FusionHub.",
+"Bond two Starlinks, or a Starlink and another line, so they share traffic.",
+"Decide which traffic goes through the tunnel and which goes straight out to the internet.",
+"Turn on WAN Smoothing for voice and video calls.",
+"Check the tunnel is up and every connection is carrying traffic, with a multi-connection speed test.",
+"Check which sites are online and healthy from InControl2.",
+"Change a WAN or LAN setting on one router from InControl2.",
+"Push one standard configuration to many routers at once from InControl2.",
+"Update a router's firmware from InControl2, now or on a schedule.",
+"Update a router's firmware from its own web admin page.",
+"Set alerts so the team is told when a site's internet connection or tunnel goes down.",
+"Read the Dashboard to see the state of each connection.",
+"Work out why a site has gone offline in InControl2 and what to do next.",
+"Find out why clients have no internet while the router shows the connection as connected.",
+"Read the event log to see when and why a connection dropped.",
+"See which connection a device's traffic is using.",
+"Work out why a Starlink connection keeps dropping or runs slow.",
+"Find out why a SpeedFusion tunnel will not come up.",
+"Take a diagnostic report from the router to send to Peplink support.",
+"Factory-reset a router and put its saved settings back."
+];
+const QS = [
+  {k:"often",   label:"How often does this come up?", opts:["daily","weekly","monthly","rarely","never"]}
+];
+const KEY = "peplink_rating_v3";
+let state = {who:"", extra:"", r:{}, notes:{}};
+try { const s = localStorage.getItem(KEY); if (s) state = Object.assign(state, JSON.parse(s)); } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+
+const box = document.getElementById("tasks");
+TASKS.forEach((t,i)=>{
+  const n = i+1;
+  const d = document.createElement("section");
+  d.className = "task"; d.id = "t"+n;
+  let html = `<h2><span class="n">${n}.</span>${t}</h2>`;
+  QS.forEach(q=>{
+    html += `<div class="q"><div class="label">${q.label}</div><div class="opts" role="group" aria-label="${q.label}">`;
+    q.opts.forEach(o=>{ html += `<button type="button" data-n="${n}" data-k="${q.k}" data-v="${o}" aria-pressed="false">${o}</button>`; });
+    html += `</div></div>`;
+  });
+  html += `<details class="note"><summary>Add a note (optional)</summary><textarea data-note="${n}" placeholder="Anything we should know about this task"></textarea></details>`;
+  d.innerHTML = html;
+  box.appendChild(d);
+});
+
+function render(){
+  document.querySelectorAll(".opts button").forEach(b=>{
+    const r = state.r[b.dataset.n] || {};
+    b.setAttribute("aria-pressed", r[b.dataset.k] === b.dataset.v ? "true" : "false");
+  });
+  let done = 0;
+  for (let n=1;n<=TASKS.length;n++){
+    const r = state.r[n] || {};
+    const full = QS.every(q=>r[q.k]);
+    if (full) done++;
+    document.getElementById("t"+n).classList.toggle("done", full);
+  }
+  document.getElementById("prog").textContent = `${done} of ${TASKS.length} rated`;
+  document.getElementById("barfill").style.width = (100*done/TASKS.length)+"%";
+}
+document.querySelectorAll("[data-note]").forEach(t=>{
+  t.value = state.notes[t.dataset.note] || "";
+  if (t.value) t.closest("details").open = true;
+  t.addEventListener("input", ()=>{ state.notes[t.dataset.note] = t.value; save(); });
+});
+box.addEventListener("click", e=>{
+  const b = e.target.closest("button[data-k]"); if (!b) return;
+  const n = b.dataset.n; state.r[n] = state.r[n] || {};
+  state.r[n][b.dataset.k] = (state.r[n][b.dataset.k] === b.dataset.v) ? undefined : b.dataset.v;
+  save(); render();
+});
+const who = document.getElementById("who"), extra = document.getElementById("extra");
+who.value = state.who; extra.value = state.extra;
+who.addEventListener("input", ()=>{ state.who = who.value; save(); });
+extra.addEventListener("input", ()=>{ state.extra = extra.value; save(); });
+
+function buildText(){
+  const lines = [];
+  lines.push("PEPLINK TASK RATINGS v3");
+  lines.push("Rater: " + (state.who || "(no name)"));
+  lines.push("Format: task | how often");
+  for (let n=1;n<=TASKS.length;n++){
+    const r = state.r[n] || {};
+    let l = `${n} | ${r.often||"-"}`;
+    const note = (state.notes[n]||"").trim();
+    if (note) l += ` | note: ${note.replace(/\s+/g," ")}`;
+    lines.push(l);
+  }
+  const x = (state.extra||"").trim();
+  if (x) { lines.push("Missing tasks:"); x.split(/\n+/).forEach(s=>lines.push("- "+s.trim())); }
+  return lines.join("\n");
+}
+function unrated(){
+  const out = [];
+  for (let n=1;n<=TASKS.length;n++){ const r = state.r[n]||{}; if (!QS.every(q=>r[q.k])) out.push(n); }
+  return out;
+}
+const msg = document.getElementById("msg");
+document.getElementById("wa").addEventListener("click", ()=>{
+  const u = unrated();
+  if (u.length && !confirm(`${u.length} task(s) are not fully rated (${u.slice(0,10).join(", ")}${u.length>10?"…":""}). Send anyway?`)) {
+    document.getElementById("t"+u[0]).scrollIntoView({behavior:"smooth",block:"center"}); return;
+  }
+  window.open("https://wa.me/?text=" + encodeURIComponent(buildText()), "_blank");
+  msg.textContent = "WhatsApp should open with your answers. Choose the person to send them to.";
+});
+document.getElementById("copy").addEventListener("click", async ()=>{
+  const t = buildText();
+  try { await navigator.clipboard.writeText(t); msg.textContent = "Copied. Paste it into a WhatsApp message or email."; }
+  catch(e){ const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); msg.textContent = "Copied."; }
+});
+render();
+</script>
+</body>
+</html>
